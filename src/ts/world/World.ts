@@ -98,6 +98,7 @@ export class World
 		this.renderer.shadowMap.enabled = true;
 		this.renderer.shadowMap.type = THREE.PCFShadowMap;
 		//this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+		// Note: Soft shadows leads to animation errors with car tires
 
 		this.generateHTML();
 

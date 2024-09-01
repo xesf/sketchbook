@@ -1,4 +1,4 @@
-import { Sky } from 'three/addons/objects/Sky.js';
+import { Sky } from 'three/examples/jsm/objects/Sky.js';
 import * as THREE from 'three';
 import { World } from './World';
 import { EntityType } from '../enums/EntityType';
@@ -45,17 +45,17 @@ export class newSky extends THREE.Object3D implements IUpdatable
         // Create sky for material
         const sky = new Sky();
         sky.scale.setScalar( 450000 );
-        sky.material.uniforms['turbidity'].value = 4;
-        sky.material.uniforms['rayleigh'].value = 2;
-        sky.material.uniforms['mieCoefficient'].value = 0.08;
-        sky.material.uniforms['mieDirectionalG'].value = 0.4;
+        //sky.material.uniforms['turbidity'].value = 10;
+        //sky.material.uniforms['rayleigh'].value = 5;
+        //sky.material.uniforms['mieCoefficient'].value = 0.08;
+        //sky.material.uniforms['mieDirectionalG'].value = 0.8;
         sky.visible = true;
 		
 		// Sky material
 		this.skyMaterial = new THREE.ShaderMaterial({
-			uniforms: THREE.UniformsUtils.clone(Sky.SkyShader.uniforms),
-			fragmentShader: Sky.SkyShader.fragmentShader,
-			vertexShader: Sky.SkyShader.vertexShader,
+			uniforms: THREE.UniformsUtils.clone(sky.material.uniforms),
+			fragmentShader: sky.material.fragmentShader,
+			vertexShader: sky.material.vertexShader,
 			side: THREE.BackSide
 		});
 
@@ -135,6 +135,7 @@ export class newSky extends THREE.Object3D implements IUpdatable
 
 		this.skyMaterial.uniforms.sunPosition.value.copy(this.sunPosition);
 		//this.skyMaterial.uniforms.cameraPos.value.copy(this.world.camera.position);
+		// Line above throws error. Also does not appear to be called again.
 	}
 
 	public refreshHemiIntensity(): void
