@@ -1,11 +1,11 @@
-import { Sky } from 'three/addons/objects/Sky.js';
+import { SkyShader } from '../../lib/shaders/SkyShader';
 import * as THREE from 'three';
 import { World } from './World';
 import { EntityType } from '../enums/EntityType';
 import { IUpdatable } from '../interfaces/IUpdatable';
 import { default as CSM } from 'three-csm';
 
-export class newSky extends THREE.Object3D implements IUpdatable
+export class Sky extends THREE.Object3D implements IUpdatable
 {
 	public updateOrder: number = 5;
 
@@ -30,7 +30,6 @@ export class newSky extends THREE.Object3D implements IUpdatable
 	private maxHemiIntensity: number = 0.9;
 	private minHemiIntensity: number = 0.3;
 
-    private sky: Sky;
 	private skyMesh: THREE.Mesh;
 	private skyMaterial: THREE.ShaderMaterial;
 
@@ -41,21 +40,12 @@ export class newSky extends THREE.Object3D implements IUpdatable
 		super();
 
 		this.world = world;
-
-        // Create sky for material
-        const sky = new Sky();
-        sky.scale.setScalar( 450000 );
-        sky.material.uniforms['turbidity'].value = 4;
-        sky.material.uniforms['rayleigh'].value = 2;
-        sky.material.uniforms['mieCoefficient'].value = 0.08;
-        sky.material.uniforms['mieDirectionalG'].value = 0.4;
-        sky.visible = true;
 		
 		// Sky material
 		this.skyMaterial = new THREE.ShaderMaterial({
-			uniforms: THREE.UniformsUtils.clone(Sky.SkyShader.uniforms),
-			fragmentShader: Sky.SkyShader.fragmentShader,
-			vertexShader: Sky.SkyShader.vertexShader,
+			uniforms: THREE.UniformsUtils.clone(SkyShader.uniforms),
+			fragmentShader: SkyShader.fragmentShader,
+			vertexShader: SkyShader.vertexShader,
 			side: THREE.BackSide
 		});
 
@@ -134,7 +124,7 @@ export class newSky extends THREE.Object3D implements IUpdatable
 		this.sunPosition.z = sunDistance * Math.cos(this._theta * Math.PI / 180) * Math.cos(this._phi * Math.PI / 180);
 
 		this.skyMaterial.uniforms.sunPosition.value.copy(this.sunPosition);
-		//this.skyMaterial.uniforms.cameraPos.value.copy(this.world.camera.position);
+		this.skyMaterial.uniforms.cameraPos.value.copy(this.world.camera.position);
 	}
 
 	public refreshHemiIntensity(): void

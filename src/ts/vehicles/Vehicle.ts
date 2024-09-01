@@ -1,6 +1,6 @@
 import { Character } from '../characters/Character';
 import * as THREE from 'three';
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 import { World } from '../world/World';
 import _ = require('lodash');
 import { KeyBinding } from '../core/KeyBinding';
@@ -104,14 +104,20 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
 		for (let i = 0; i < this.rayCastVehicle.wheelInfos.length; i++)
 		{
 			this.rayCastVehicle.updateWheelTransform(i);
-			let transform = this.rayCastVehicle.wheelInfos[i].worldTransform;
+			//let transform = this.rayCastVehicle.wheelInfos[i].worldTransform;
+			let transform = this.rayCastVehicle.getWheelTransformWorld(i);
+			let p = new THREE.Vector3(transform.position.x, transform.position.y, transform.position.z);
+			let q = new THREE.Quaternion(transform.quaternion.x, transform.quaternion.y, transform.quaternion.z, transform.quaternion.w);
 
 			let wheelObject = this.wheels[i].wheelObject;
-			wheelObject.position.copy(Utils.threeVector(transform.position));
-			wheelObject.quaternion.copy(Utils.threeQuat(transform.quaternion));
+			wheelObject.position.copy(p);
+			wheelObject.quaternion.copy(q);
 
 			let upAxisWorld = new CANNON.Vec3();
-			this.rayCastVehicle.getVehicleAxisWorld(this.rayCastVehicle.indexUpAxis, upAxisWorld);
+			let axisIndex = this.rayCastVehicle.indexUpAxis;
+			upAxisWorld.set(axisIndex === 0 ? 1 : 0, axisIndex === 1 ? 1 : 0, axisIndex === 2 ? 1 : 0);
+			this.rayCastVehicle.chassisBody.vectorToWorldFrame(upAxisWorld, upAxisWorld);
+			//this.rayCastVehicle.getVehicleAxisWorld(this.rayCastVehicle.indexUpAxis, upAxisWorld);
 		}
 
 		this.updateMatrixWorld();

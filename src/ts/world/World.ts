@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 import Swal from 'sweetalert2';
 import * as $ from 'jquery';
 
@@ -28,8 +28,11 @@ import { CollisionGroups } from '../enums/CollisionGroups';
 import { BoxCollider } from '../physics/colliders/BoxCollider';
 import { TrimeshCollider } from '../physics/colliders/TrimeshCollider';
 import { Vehicle } from '../vehicles/Vehicle';
+import { Helicopter } from '../vehicles/Helicopter';
+import { Airplane } from '../vehicles/Airplane';
+import { Car } from '../vehicles/Car';
 import { Scenario } from './Scenario';
-import { Sky } from './Sky';
+import { newSky } from './Sky';
 import { Ocean } from './Ocean';
 
 export class World
@@ -39,7 +42,7 @@ export class World
 	public composer: any;
 	public stats: Stats;
 	public graphicsWorld: THREE.Scene;
-	public sky: Sky;
+	public sky: newSky;
 	public physicsWorld: CANNON.World;
 	public parallelPairs: any[];
 	public physicsFrameRate: number;
@@ -60,6 +63,9 @@ export class World
 	public scenarios: Scenario[] = [];
 	public characters: Character[] = [];
 	public vehicles: Vehicle[] = [];
+	public cars: Car[] = [];
+	public helicopters: Helicopter[] = [];
+	public airplanes: Airplane[] = [];
 	public paths: Path[] = [];
 	public scenarioGUIFolder: any;
 	public updatables: IUpdatable[] = [];
@@ -90,7 +96,8 @@ export class World
 		this.renderer.toneMapping = THREE.ACESFilmicToneMapping;
 		this.renderer.toneMappingExposure = 1.0;
 		this.renderer.shadowMap.enabled = true;
-		this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+		this.renderer.shadowMap.type = THREE.PCFShadowMap;
+		//this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
 		this.generateHTML();
 
@@ -127,7 +134,7 @@ export class World
 		this.physicsWorld = new CANNON.World();
 		this.physicsWorld.gravity.set(0, -9.81, 0);
 		this.physicsWorld.broadphase = new CANNON.SAPBroadphase(this.physicsWorld);
-		this.physicsWorld.solver.iterations = 10;
+		//this.physicsWorld.solver.iterations = 10; NOW DEFAULT for GSSolver
 		this.physicsWorld.allowSleep = true;
 
 		this.parallelPairs = [];
@@ -150,7 +157,7 @@ export class World
 		// Initialization
 		this.inputManager = new InputManager(this, this.renderer.domElement);
 		this.cameraOperator = new CameraOperator(this, this.camera, this.params.Mouse_Sensitivity);
-		this.sky = new Sky(this);
+		this.sky = new newSky(this);
 		
 		// Load scene if path is supplied
 		if (worldScenePath !== undefined)
@@ -166,11 +173,12 @@ export class World
 					text: 'Feel free to explore the world and interact with available vehicles. There are also various scenarios ready to launch from the right panel.',
 					footer: '<a href="https://github.com/swift502/Sketchbook" target="_blank">GitHub page</a><a href="https://discord.gg/fGuEqCe" target="_blank">Discord server</a>',
 					confirmButtonText: 'Okay',
-					buttonsStyling: false,
-					onClose: () => {
+					buttonsStyling: false
+				}).then((result) => {
+					if (result.isConfirmed) {
 						UIManager.setUserInterfaceVisible(true);
 					}
-				});
+				})
 			};
 			loadingManager.loadGLTF(worldScenePath, (gltf) =>
 				{
@@ -213,10 +221,36 @@ export class World
 
 	public updatePhysics(timeStep: number): void
 	{
+		// ADD PRE-STEPS for all characters and vehicles
+		this.characters.forEach((char) => {
+			if (typeof char.physicsPreStep == "function")
+			{
+				char.physicsPreStep(char.characterCapsule.body, char)
+			}
+		})
+
+		this.vehicles.forEach((vehicle) => {
+			if (vehicle instanceof Car)
+			{
+				vehicle.physicsPreStep(vehicle.collision, vehicle)
+			} else if (vehicle instanceof Helicopter)
+			{
+				vehicle.physicsPreStep(vehicle.collision, vehicle)
+			} else if (vehicle instanceof Airplane)
+			{
+				vehicle.physicsPreStep(vehicle.collision, vehicle)
+			}
+		})
+		
 		// Step the physics world
 		this.physicsWorld.step(this.physicsFrameTime, timeStep);
 
 		this.characters.forEach((char) => {
+			if (typeof char.physicsPostStep == "function")
+			{
+				char.physicsPostStep(char.characterCapsule.body, char)
+			}
+
 			if (this.isOutOfBounds(char.characterCapsule.body.position))
 			{
 				this.outOfBoundsRespawn(char.characterCapsule.body);
@@ -224,12 +258,15 @@ export class World
 		});
 
 		this.vehicles.forEach((vehicle) => {
+
 			if (this.isOutOfBounds(vehicle.rayCastVehicle.chassisBody.position))
 			{
 				let worldPos = new THREE.Vector3();
 				vehicle.spawnPoint.getWorldPosition(worldPos);
-				worldPos.y += 1;
-				this.outOfBoundsRespawn(vehicle.rayCastVehicle.chassisBody, Utils.cannonVector(worldPos));
+				//worldPos.setComponent(1, worldPos.getComponent(1) + 1);
+				let worldPos_CANNON = new CANNON.Vec3(worldPos.x, worldPos.y+1, worldPos.z)
+				//worldPos.y += 1;
+				this.outOfBoundsRespawn(vehicle.rayCastVehicle.chassisBody, worldPos_CANNON);
 			}
 		});
 	}
@@ -336,6 +373,7 @@ export class World
 			{
 				if (child.type === 'Mesh')
 				{
+					child.geometry = child.geometry.toNonIndexed();
 					Utils.setupMeshProperties(child);
 					this.sky.csm.setupMaterial(child.material);
 
@@ -351,23 +389,32 @@ export class World
 					{
 						if (child.userData.hasOwnProperty('type')) 
 						{
+							//child.geometry = child.geometry.toNonIndexed();
+
 							// Convex doesn't work! Stick to boxes!
 							if (child.userData.type === 'box')
 							{
 								let phys = new BoxCollider({size: new THREE.Vector3(child.scale.x, child.scale.y, child.scale.z)});
-								phys.body.position.copy(Utils.cannonVector(child.position));
-								phys.body.quaternion.copy(Utils.cannonQuat(child.quaternion));
-								phys.body.computeAABB();
+								phys.body.position.copy(new CANNON.Vec3(child.position.x, child.position.y, child.position.z));
+								phys.body.quaternion.copy(new CANNON.Quaternion(child.quaternion.x, child.quaternion.y, child.quaternion.z, child.quaternion.w));
+								phys.body.updateAABB();
 
 								phys.body.shapes.forEach((shape) => {
 									shape.collisionFilterMask = ~CollisionGroups.TrimeshColliders;
 								});
+
+								//console.log("Box: ");
+								//console.log(phys.body);
 
 								this.physicsWorld.addBody(phys.body);
 							}
 							else if (child.userData.type === 'trimesh')
 							{
 								let phys = new TrimeshCollider(child, {});
+
+								//console.log("TriMesh: ");
+								//console.log(phys.body);
+
 								this.physicsWorld.addBody(phys.body);
 							}
 

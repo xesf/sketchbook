@@ -87,12 +87,13 @@ export class LoadingManager
 					title: scenario.descriptionTitle,
 					html: scenario.descriptionContent,
 					confirmButtonText: 'Play',
-					buttonsStyling: false,
-					onClose: () => {
+					buttonsStyling: false
+				}).then((result) => {
+					if (result.isConfirmed) {
 						this.world.setTimeScale(1);
 						UIManager.setUserInterfaceVisible(true);
 					}
-				});
+				})
 			};
 		}
 	}

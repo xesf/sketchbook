@@ -3,6 +3,7 @@ import { VehicleSpawnPoint } from './VehicleSpawnPoint';
 import { CharacterSpawnPoint } from './CharacterSpawnPoint';
 import { World } from '../world/World';
 import { LoadingManager } from '../core/LoadingManager';
+import * as THREE from 'three';
 
 export class Scenario
 {

@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 import { Vehicle } from './Vehicle';
 import * as Utils from '../core/FunctionLibrary';
 import { VehicleSeat } from './VehicleSeat';
@@ -79,11 +79,13 @@ export class VehicleDoor
 			this.doorObject.getWorldPosition(this.doorWorldPos);
 
 			// Get acceleration
-			let vehicleVel = Utils.threeVector(this.vehicle.rayCastVehicle.chassisBody.velocity);
+			let v = this.vehicle.rayCastVehicle.chassisBody.velocity;
+			let vehicleVel = new THREE.Vector3(v.x, v.y, v.z);
 			let vehicleVelDiff = vehicleVel.clone().sub(this.lastVehicleVel);
 
 			// Get vectors
-			const quat = Utils.threeQuat(this.vehicle.rayCastVehicle.chassisBody.quaternion);
+			let q = this.vehicle.rayCastVehicle.chassisBody.quaternion
+			const quat = new THREE.Quaternion(q.x, q.y, q.z, q.w);
 			const back = new THREE.Vector3(0, 0, -1).applyQuaternion(quat);
 			const up = new THREE.Vector3(0, 1, 0).applyQuaternion(quat);
 
@@ -152,7 +154,8 @@ export class VehicleDoor
 		this.lastVehicleVel = new THREE.Vector3();
 
 		// Get vectors
-		const quat = Utils.threeQuat(this.vehicle.rayCastVehicle.chassisBody.quaternion);
+		let q = this.vehicle.rayCastVehicle.chassisBody.quaternion;
+		const quat = new THREE.Quaternion(q.x, q.y, q.z, q.w);
 		const back = new THREE.Vector3(0, 0, -1).applyQuaternion(quat);
 		this.lastTrailerPos.copy(back.add(this.doorWorldPos));
 	}

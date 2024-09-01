@@ -1,4 +1,4 @@
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 import * as THREE from 'three';
 import * as Utils from '../../core/FunctionLibrary';
 import { ICollider } from '../../interfaces/ICollider';
@@ -29,6 +29,7 @@ export class BoxCollider implements ICollider
 
 		let shape = new CANNON.Box(options.size);
 		// shape.material = mat;
+		//console.log(shape)
 
 		// Add phys sphere
 		let physBox = new CANNON.Body({

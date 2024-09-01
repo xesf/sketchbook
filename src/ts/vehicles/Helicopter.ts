@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 import * as Utils from '../core/FunctionLibrary';
 
 import { Vehicle } from './Vehicle';
@@ -21,7 +21,8 @@ export class Helicopter extends Vehicle implements IControllable, IWorldEntity
 
 		this.readHelicopterData(gltf);
 
-		this.collision.preStep = (body: CANNON.Body) => { this.physicsPreStep(body, this); };
+		//this.collision.preStep = (body: CANNON.Body) => { this.physicsPreStep(body, this); };
+		//this.physicsPreStep(this.collision, this);
 
 		this.actions = {
 			'ascend': new KeyBinding('ShiftLeft'),
@@ -85,7 +86,7 @@ export class Helicopter extends Vehicle implements IControllable, IWorldEntity
 
 	public physicsPreStep(body: CANNON.Body, heli: Helicopter): void
 	{
-		let quat = Utils.threeQuat(body.quaternion);
+		let quat = new THREE.Quaternion(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w)
 		let right = new THREE.Vector3(1, 0, 0).applyQuaternion(quat);
 		let globalUp = new THREE.Vector3(0, 1, 0);
 		let up = new THREE.Vector3(0, 1, 0).applyQuaternion(quat);

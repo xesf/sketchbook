@@ -1,9 +1,9 @@
 import { Path } from './Path';
-import { Object3D } from 'three';
+import * as THREE from 'three';
 
 export class PathNode
 {
-	public object: Object3D;
+	public object: THREE.Object3D;
 	public path: Path;
 	public nextNode: PathNode;
 	public previousNode: PathNode;

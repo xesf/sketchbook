@@ -1,4 +1,4 @@
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 
 import { Vehicle } from './Vehicle';
 import { IControllable } from '../interfaces/IControllable';
@@ -47,7 +47,8 @@ export class Car extends Vehicle implements IControllable
 
 		this.readCarData(gltf);
 
-		this.collision.preStep = (body: CANNON.Body) => { this.physicsPreStep(body, this); };
+		//this.collision.preStep = (body: CANNON.Body) => { this.physicsPreStep(body, this); };
+		//this.physicsPreStep(this.collision, this);
 
 		this.actions = {
 			'throttle': new KeyBinding('KeyW'),
@@ -180,13 +181,13 @@ export class Car extends Vehicle implements IControllable
 	public physicsPreStep(body: CANNON.Body, car: Car): void
 	{
 		// Constants
-		const quat = Utils.threeQuat(body.quaternion);
+		const quat = new THREE.Quaternion(body.quaternion.x, body.quaternion.y, body.quaternion.z, body.quaternion.w);
 		const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(quat);
 		const right = new THREE.Vector3(1, 0, 0).applyQuaternion(quat);
 		const up = new THREE.Vector3(0, 1, 0).applyQuaternion(quat);
 
 		// Measure speed
-		this._speed = this.collision.velocity.dot(Utils.cannonVector(forward));
+		this._speed = this.collision.velocity.dot(new CANNON.Vec3(forward.x, forward.y, forward.z));
 
 		// Air spin
 		// It takes 2 seconds until you have max spin air control since you leave the ground
@@ -201,11 +202,18 @@ export class Car extends Vehicle implements IControllable
 		const airSpinAcceleration = 0.15;
 		const angVel = this.collision.angularVelocity;
 
-		const spinVectorForward = Utils.cannonVector(forward.clone());
-		const spinVectorRight = Utils.cannonVector(right.clone());
+		//const spinVectorForward = Utils.cannonVector(forward.clone());
+		const spinVectorForward = new CANNON.Vec3(forward.x, forward.y, forward.z);
+		//const spinVectorRight = Utils.cannonVector(right.clone());
+		const spinVectorRight = new CANNON.Vec3(right.x, right.y, right.z);
 
-		const effectiveSpinVectorForward = Utils.cannonVector(forward.clone().multiplyScalar(airSpinAcceleration * (airSpinInfluence + flipOverInfluence)));
-		const effectiveSpinVectorRight = Utils.cannonVector(right.clone().multiplyScalar(airSpinAcceleration * (airSpinInfluence)));
+		//const effectiveSpinVectorForward = Utils.cannonVector(forward.clone().multiplyScalar(airSpinAcceleration * (airSpinInfluence + flipOverInfluence)));
+		const effectiveSpinVectorForward = new CANNON.Vec3(forward.x, forward.y, forward.z).scale(airSpinAcceleration * (airSpinInfluence + flipOverInfluence));
+		//const effectiveSpinVectorRight = Utils.cannonVector(right.clone().multiplyScalar(airSpinAcceleration * (airSpinInfluence)));
+		const effectiveSpinVectorRight = new CANNON.Vec3(right.x, right.y, right.z).scale(airSpinAcceleration * (airSpinInfluence));
+		//console.log(right)
+		//console.log(spinVectorRight)
+		//console.log(effectiveSpinVectorRight)
 
 		// Right
 		if (this.actions.right.isPressed && !this.actions.left.isPressed) {
@@ -236,7 +244,8 @@ export class Car extends Vehicle implements IControllable
 		// Steering
 		const velocity = new CANNON.Vec3().copy(this.collision.velocity);
 		velocity.normalize();
-		let driftCorrection = Utils.getSignedAngleBetweenVectors(Utils.threeVector(velocity), forward);
+		let velocity_THREE = new THREE.Vector3(velocity.x, velocity.y, velocity.z);
+		let driftCorrection = Utils.getSignedAngleBetweenVectors(velocity_THREE, forward);
 
 		const maxSteerVal = 0.8;
 		let speedFactor = THREE.MathUtils.clamp(this.speed * 0.3, 1, Number.MAX_VALUE);

@@ -2,6 +2,7 @@ import { Character } from '../characters/Character';
 import { IInputReceiver } from './IInputReceiver';
 import { VehicleSeat } from '../vehicles/VehicleSeat';
 import { EntityType } from '../enums/EntityType';
+import * as THREE from 'three';
 
 export interface IControllable extends IInputReceiver
 {

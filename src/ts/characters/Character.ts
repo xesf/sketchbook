@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import * as CANNON from 'cannon';
+import * as CANNON from 'cannon-es';
 import * as _ from 'lodash';
 import * as Utils from '../core/FunctionLibrary';
 
@@ -155,8 +155,10 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		this.raycastBox.visible = false;
 
 		// Physics pre/post step callback bindings
-		this.characterCapsule.body.preStep = (body: CANNON.Body) => { this.physicsPreStep(body, this); };
-		this.characterCapsule.body.postStep = (body: CANNON.Body) => { this.physicsPostStep(body, this); };
+		//this.characterCapsule.body.preStep = (body: CANNON.Body) => { this.physicsPreStep(body, this); };
+		//this.characterCapsule.body.postStep = (body: CANNON.Body) => { this.physicsPostStep(body, this); };
+		//this.physicsPreStep(this.characterCapsule.body, this);
+		//this.physicsPostStep(this.characterCapsule.body, this);
 
 		// States
 		this.setState(new Idle(this));
@@ -255,7 +257,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 		}
 		else
 		{
-			this.world.physicsWorld.remove(this.characterCapsule.body);
+			this.world.physicsWorld.removeBody(this.characterCapsule.body);
 		}
 	}
 
@@ -265,6 +267,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 
 			if (child.isMesh)
 			{
+				child.geometry = child.geometry.toNonIndexed();
 				Utils.setupMeshProperties(child);
 
 				if (child.material !== undefined)
@@ -979,7 +982,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 			_.pull(world.characters, this);
 
 			// Remove physics
-			world.physicsWorld.remove(this.characterCapsule.body);
+			world.physicsWorld.removeBody(this.characterCapsule.body);
 
 			// Remove visuals
 			world.graphicsWorld.remove(this);

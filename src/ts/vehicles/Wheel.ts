@@ -1,4 +1,5 @@
-import { WheelInfo } from 'cannon';
+import * as THREE from 'three';
+import { WheelInfo } from 'cannon-es';
 
 export class Wheel
 {
