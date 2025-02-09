@@ -84,16 +84,16 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
     public update(timeStep: number): void
     {
         this.position.set(
-            this.collision.interpolatedPosition.x,
-            this.collision.interpolatedPosition.y,
-            this.collision.interpolatedPosition.z
+            this.collision.position.x,
+            this.collision.position.y,
+            this.collision.position.z
         );
 
         this.quaternion.set(
-            this.collision.interpolatedQuaternion.x,
-            this.collision.interpolatedQuaternion.y,
-            this.collision.interpolatedQuaternion.z,
-            this.collision.interpolatedQuaternion.w
+            this.collision.quaternion.x,
+            this.collision.quaternion.y,
+            this.collision.quaternion.z,
+            this.collision.quaternion.w
         );
 
         this.seats.forEach((seat: VehicleSeat) => {
