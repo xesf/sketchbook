@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import * as $ from 'jquery';
 
 import { CameraOperator } from '../core/CameraOperator';
 import { EffectComposer } from 'three/examples/jsm/postprocessing/EffectComposer';
@@ -85,7 +84,8 @@ export class World
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
 
-        this.generateHTML();
+        document.body.appendChild(this.renderer.domElement);
+        this.renderer.domElement.id = 'canvas';
 
         // Auto window resize
         function onWindowResize(): void
@@ -494,51 +494,6 @@ export class World
         });
 
         document.getElementById('controls').innerHTML = html;
-    }
-
-    private generateHTML(): void
-    {
-        // Fonts
-        $('head').append('<link href="https://fonts.googleapis.com/css2?family=Alfa+Slab+One&display=swap" rel="stylesheet">');
-        $('head').append('<link href="https://fonts.googleapis.com/css2?family=Solway:wght@400;500;700&display=swap" rel="stylesheet">');
-        $('head').append('<link href="https://fonts.googleapis.com/css2?family=Cutive+Mono&display=swap" rel="stylesheet">');
-
-        // Loader
-        $(`	<div id="loading-screen">
-                <div id="loading-screen-background"></div>
-                <h1 id="main-title" class="sb-font">Sketchbook ${version}</h1>
-                <div class="cubeWrap">
-                    <div class="cube">
-                        <div class="faces1"></div>
-                        <div class="faces2"></div>     
-                    </div> 
-                </div> 
-                <div id="loading-text">Loading...</div>
-            </div>
-        `).appendTo('body');
-
-        // UI
-        $(`	<div id="ui-container" style="display: none;">
-                <div class="github-corner">
-                    <a href="https://github.com/swift502/Sketchbook" target="_blank" title="Fork me on GitHub">
-                        <svg viewbox="0 0 100 100" fill="currentColor">
-                            <title>Fork me on GitHub</title>
-                            <path d="M0 0v100h100V0H0zm60 70.2h.2c1 2.7.3 4.7 0 5.2 1.4 1.4 2 3 2 5.2 0 7.4-4.4 9-8.7 9.5.7.7 1.3 2
-                            1.3 3.7V99c0 .5 1.4 1 1.4 1H44s1.2-.5 1.2-1v-3.8c-3.5 1.4-5.2-.8-5.2-.8-1.5-2-3-2-3-2-2-.5-.2-1-.2-1
-                            2-.7 3.5.8 3.5.8 2 1.7 4 1 5 .3.2-1.2.7-2 1.2-2.4-4.3-.4-8.8-2-8.8-9.4 0-2 .7-4 2-5.2-.2-.5-1-2.5.2-5
-                            0 0 1.5-.6 5.2 1.8 1.5-.4 3.2-.6 4.8-.6 1.6 0 3.3.2 4.8.7 2.8-2 4.4-2 5-2z"></path>
-                        </svg>
-                    </a>
-                </div>
-                <div class="left-panel">
-                    <div id="controls" class="panel-segment flex-bottom"></div>
-                </div>
-            </div>
-        `).appendTo('body');
-
-        // Canvas
-        document.body.appendChild(this.renderer.domElement);
-        this.renderer.domElement.id = 'canvas';
     }
 
     private createParamsGUI(scope: World): void
