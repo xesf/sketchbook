@@ -26,7 +26,7 @@ export class VehicleSpawnPoint implements ISpawnPoint
 
 	public spawn(loadingManager: LoadingManager, world: World): void
 	{
-		loadingManager.loadGLTF('build/assets/' + this.type + '.glb', (model: any) =>
+		loadingManager.loadGLTF('assets/' + this.type + '.glb', (model: any) =>
 		{
 			let vehicle: Vehicle = this.getNewVehicleByType(model, this.type);
 			vehicle.spawnPoint = this.object;
@@ -43,7 +43,7 @@ export class VehicleSpawnPoint implements ISpawnPoint
 
 			if (this.driver !== undefined)
 			{
-				loadingManager.loadGLTF('build/assets/boxman.glb', (charModel) =>
+				loadingManager.loadGLTF('assets/boxman.glb', (charModel) =>
 				{
 					let character = new Character(charModel);
 					world.add(character);

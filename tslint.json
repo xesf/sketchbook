@@ -8,7 +8,7 @@
         "one-line": false,
         "no-empty": false,
         "no-console": false,
-        "indent": [true, "tabs"],
+        "indent": [true, "spaces"],
         "object-literal-shorthand": false,
         "quotemark": [true, "single"],
         "prefer-const": false,
