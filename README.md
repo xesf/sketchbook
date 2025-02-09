@@ -1,20 +1,15 @@
 <p align="center">
-	<a href="https://jblaha.art/sketchbook/latest"><img src="./src/img/thumbnail.png"></a>
+	<a href="https://jblaha.art/sketchbook/latest"><img src="./src/img/cover-by-weiserhei.jpg"></a>
 	<br>
 	<a href="https://jblaha.art/sketchbook/latest">Live demo</a>
 	<br>
 </p>
 
-# Final update (20. Feb 2023)
+# 📒 Sketchbook by
 
-As I have no more interest in developing this project, it comes to a conclusion. In order to remain honest about the true state of the project, I am archiving this repository.
+<img src="./src/img/thumbnail.png">
 
-- If you wish to modify Sketchbook feel free to fork it.
-- To see if someone is currently maintaining a fork, check out the [Network Graph](https://github.com/swift502/Sketchbook/network).
-
-# 📒 Sketchbook
-
-Simple web based game engine built on [three.js](https://github.com/mrdoob/three.js) and [cannon.js](https://github.com/schteppe/cannon.js) focused on third-person character controls and related gameplay mechanics.
+Simple web based game engine built on [three.js](https://github.com/mrdoob/three.js) and [cannon-es](https://github.com/pmndrs/cannon-es) focused on third-person character controls and related gameplay mechanics.
 
 Mostly a playground for exploring how conventional third person gameplay mechanics found in modern games work and recreating them in a general way.
 
@@ -36,7 +31,10 @@ Mostly a playground for exploring how conventional third person gameplay mechani
 	* Airplanes
 	* Helicopters
 
-All planned features can be found in the [GitHub Projects](https://github.com/swift502/Sketchbook/projects).
+All planned features can be found in the [GitHub Projects](https://github.com/xesfnet/Sketchbook/projects).
+
+## ThreeJS Discourse
+* https://discourse.threejs.org/t/sketchbook-v0-4-three-js-cannon-js-playground/18432
 
 ## Usage
 
@@ -93,6 +91,14 @@ const world = new World('scene.glb');
 
 Big thank you to each of the following github users for contributing to Sketchbook:
 
-- [aleqsunder](https://github.com/aleqsunder)
-- [barhatsor](https://github.com/barhatsor)
-- [danshuri](https://github.com/danshuri)
+Sketchbook v0.4 Creator:
+- [Jan Bláha](https://jblaha.art)
+- [swift502](https://github.com/swift502/Sketchbook)
+
+Contributions:
+- [aleqsunder](https://github.com/aleqsunder/Sketchbook)
+- [barhatsor](https://github.com/barhatsor/Sketchbook)
+- [danshuri](https://github.com/danshuri/Sketchbook)
+- [cjmott](https://github.com/cjmott/Sketchbook)
+- [Inthenew](https://github.com/Inthenew/Sketchbook)
+- weiserhei - Cover Art
