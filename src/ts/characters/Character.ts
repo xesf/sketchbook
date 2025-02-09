@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import * as _ from 'lodash';
 import * as Utils from '../core/FunctionLibrary';
 
 import { KeyBinding } from '../core/KeyBinding';
@@ -302,9 +301,8 @@ export class Character extends THREE.Object3D implements IWorldEntity
 				for (const action in this.actions) {
 					if (this.actions.hasOwnProperty(action)) {
 						const binding = this.actions[action];
-	
-						if (_.includes(binding.eventCodes, code))
-						{
+
+						if (binding.eventCodes.includes(code)) {
 							this.triggerAction(action, pressed);
 						}
 					}
@@ -325,7 +323,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 				if (this.actions.hasOwnProperty(action)) {
 					const binding = this.actions[action];
 
-					if (_.includes(binding.eventCodes, code))
+					if (binding.eventCodes.includes(code))
 					{
 						this.triggerAction(action, pressed);
 					}
@@ -936,7 +934,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 
 	public addToWorld(world: World): void
 	{
-		if (_.includes(world.characters, this))
+		if (world.characters.includes(this))
 		{
 			console.warn('Adding character to a world in which it already exists.');
 		}
@@ -965,7 +963,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 
 	public removeFromWorld(world: World): void
 	{
-		if (!_.includes(world.characters, this))
+		if (!world.characters.includes(this))
 		{
 			console.warn('Removing character from a world in which it isn\'t present.');
 		}
@@ -979,7 +977,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 			this.world = undefined;
 
 			// Remove from characters
-			_.pull(world.characters, this);
+			world.characters.splice(world.characters.indexOf(this), 1);
 
 			// Remove physics
 			world.physicsWorld.removeBody(this.characterCapsule.body);

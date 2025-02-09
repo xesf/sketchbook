@@ -10,7 +10,6 @@ import { FXAAShader  } from 'three/examples/jsm/shaders/FXAAShader';
 import { Stats } from '../../lib/utils/Stats';
 import * as GUI from '../../lib/utils/dat.gui';
 import { CannonDebugRenderer } from '../../lib/cannon/CannonDebugRenderer';
-import * as _ from 'lodash';
 
 import { InputManager } from '../core/InputManager';
 import * as Utils from '../core/FunctionLibrary';
@@ -332,7 +331,7 @@ export class World
 
     public unregisterUpdatable(registree: IUpdatable): void
     {
-        _.pull(this.updatables, registree);
+        this.updatables.splice(this.updatables.indexOf(registree), 1);
     }
 
     public loadScene(loadingManager: LoadingManager, gltf: any): void

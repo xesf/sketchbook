@@ -4,7 +4,6 @@ import { World } from '../world/World';
 import { IInputReceiver } from '../interfaces/IInputReceiver';
 import { KeyBinding } from './KeyBinding';
 import { Character } from '../characters/Character';
-import _ = require('lodash');
 import { IUpdatable } from '../interfaces/IUpdatable';
 
 export class CameraOperator implements IInputReceiver, IUpdatable
@@ -125,7 +124,7 @@ export class CameraOperator implements IInputReceiver, IUpdatable
 				if (this.actions.hasOwnProperty(action)) {
 					const binding = this.actions[action];
 	
-					if (_.includes(binding.eventCodes, code))
+					if (binding.eventCodes.includes(code))
 					{
 						binding.isPressed = pressed;
 					}
@@ -145,7 +144,7 @@ export class CameraOperator implements IInputReceiver, IUpdatable
 			if (this.actions.hasOwnProperty(action)) {
 				const binding = this.actions[action];
 
-				if (_.includes(binding.eventCodes, code))
+				if (binding.eventCodes.includes(code))
 				{
 					binding.isPressed = pressed;
 				}

@@ -2,7 +2,6 @@ import { Character } from '../characters/Character';
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
 import { World } from '../world/World';
-import _ = require('lodash');
 import { KeyBinding } from '../core/KeyBinding';
 import { VehicleSeat } from './VehicleSeat';
 import { Wheel } from './Wheel';
@@ -183,7 +182,7 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
                 if (this.actions.hasOwnProperty(action)) {
                     const binding = this.actions[action];
 
-                    if (_.includes(binding.eventCodes, code))
+                    if (binding.eventCodes.includes(code))
                     {
                         this.triggerAction(action, pressed);
                     }
@@ -323,7 +322,7 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
 
     public addToWorld(world: World): void
     {
-        if (_.includes(world.vehicles, this))
+        if (world.vehicles.includes(this))
         {
             console.warn('Adding character to a world in which it already exists.');
         }
@@ -353,14 +352,14 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
 
     public removeFromWorld(world: World): void
     {
-        if (!_.includes(world.vehicles, this))
+        if (!world.vehicles.includes(this))
         {
             console.warn('Removing character from a world in which it isn\'t present.');
         }
         else
         {
             this.world = undefined;
-            _.pull(world.vehicles, this);
+            world.vehicles.splice(world.vehicles.indexOf(this), 1);
             world.graphicsWorld.remove(this);
             // world.physicsWorld.remove(this.collision);
             this.rayCastVehicle.removeFromWorld(world.physicsWorld);

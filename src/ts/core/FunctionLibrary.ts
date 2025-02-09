@@ -1,6 +1,5 @@
 import * as THREE from 'three';
 import * as CANNON from 'cannon-es';
-import * as _ from 'lodash';
 import { SimulationFrame } from '../physics/spring_simulation/SimulationFrame';
 import { World } from '../world/World';
 import { Side } from '../enums/Side';
@@ -113,7 +112,7 @@ export function haveDifferentSigns(n1: number, n2: number): boolean
 
 export function setDefaults(options: {}, defaults: {}): {}
 {
-	return _.defaults({}, _.clone(options), defaults);
+	return Object.assign({}, defaults, options);
 }
 
 export function getGlobalProperties(prefix: string = ''): any[]
