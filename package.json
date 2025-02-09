@@ -32,7 +32,6 @@
     "cannon-es": "0.20.0",
     "jquery": "^3.7.1",
     "lodash": "^4.17.21",
-    "sweetalert2": "^11.6.13",
     "three": "0.168.0",
     "three-csm": "4.2.1",
     "three-to-cannon": "5.0.1"
