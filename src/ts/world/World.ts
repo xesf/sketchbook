@@ -501,7 +501,7 @@ export class World
             Pointer_Lock: true,
             Mouse_Sensitivity: 0.3,
             Time_Scale: 1,
-            Shadows: true,
+            Shadows: false,
             FXAA: true,
             Debug_Physics: false,
             Debug_FPS: true,
