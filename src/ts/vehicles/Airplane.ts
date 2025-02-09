@@ -6,7 +6,6 @@ import { IControllable } from '../interfaces/IControllable';
 import { IWorldEntity } from '../interfaces/IWorldEntity';
 import { KeyBinding } from '../core/KeyBinding';
 import { SpringSimulator } from '../physics/spring_simulation/SpringSimulator';
-import * as Utils from '../core/FunctionLibrary';
 import { EntityType } from '../enums/EntityType';
 
 export class Airplane extends Vehicle implements IControllable, IWorldEntity
@@ -265,11 +264,11 @@ export class Airplane extends Vehicle implements IControllable, IWorldEntity
 		let speedModifier = 0.02;
 		if (plane.actions.throttle.isPressed && !plane.actions.brake.isPressed)
 		{
-			speedModifier = 0.06;
+			speedModifier = 0.16;
 		}
 		else if (!plane.actions.throttle.isPressed && plane.actions.brake.isPressed)
 		{
-			speedModifier = -0.05;
+			speedModifier = -0.15;
 		}
 		else if (this.rayCastVehicle.numWheelsOnGround > 0)
 		{

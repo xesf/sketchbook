@@ -95,15 +95,15 @@ export class Helicopter extends Vehicle implements IControllable, IWorldEntity
 		// Throttle
 		if (heli.actions.ascend.isPressed)
 		{
-			body.velocity.x += up.x * 0.15 * this.enginePower;
-			body.velocity.y += up.y * 0.15 * this.enginePower;
-			body.velocity.z += up.z * 0.15 * this.enginePower;
+			body.velocity.x += up.x * 0.25 * this.enginePower;
+			body.velocity.y += up.y * 0.25 * this.enginePower;
+			body.velocity.z += up.z * 0.25 * this.enginePower;
 		}
 		if (heli.actions.descend.isPressed)
 		{
-			body.velocity.x -= up.x * 0.15 * this.enginePower;
-			body.velocity.y -= up.y * 0.15 * this.enginePower;
-			body.velocity.z -= up.z * 0.15 * this.enginePower;
+			body.velocity.x -= up.x * 0.25 * this.enginePower;
+			body.velocity.y -= up.y * 0.25 * this.enginePower;
+			body.velocity.z -= up.z * 0.25 * this.enginePower;
 		}
 
 		// Vertical stabilization

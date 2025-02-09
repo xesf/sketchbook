@@ -110,6 +110,9 @@ export class newSky extends THREE.Object3D implements IUpdatable
             customSplitsCallback: splitsCallback
         });
         this.csm.fade = false;
+        this.csm.lights.forEach((light) => {
+            light.castShadow = false;
+        });
 
         this.refreshSunPosition();
         
