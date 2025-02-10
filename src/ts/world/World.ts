@@ -30,8 +30,9 @@ import { Car } from '../vehicles/Car';
 import { Scenario } from './Scenario';
 import { newSky } from './Sky';
 import { Ocean } from './Ocean';
+import { IInputReceiver } from '../interfaces/IInputReceiver';
+import { KeyBinding } from '../core/KeyBinding';
 
-import { version } from '../../../package.json';
 
 export class World
 {
@@ -67,12 +68,20 @@ export class World
     public paths: Path[] = [];
     public scenarioGUIFolder: any;
     public updatables: IUpdatable[] = [];
+    public paused: boolean;
+    public actions: { [action: string]: KeyBinding; };
+    public prevControls: any;
 
     private lastScenarioID: string;
 
     constructor(worldScenePath?: any)
     {
         const scope = this;
+
+        this.paused = false;
+        this.actions = {
+            'pause': new KeyBinding('KeyP')
+        }
 
         // Renderer
         this.renderer = new THREE.WebGLRenderer();
@@ -96,6 +105,17 @@ export class World
             scope.composer.setSize(window.innerWidth * pixelRatio, window.innerHeight * pixelRatio);
         }
         window.addEventListener('resize', onWindowResize, false);
+
+        // document.addEventListener('keydown', (evt) => {
+        //     if (evt.code === 'KeyP') {
+        //         this.toggle_pause();
+        //     }
+        // }, false);
+		document.addEventListener('keyup', (evt) => {
+            if (evt.code === 'KeyP') {
+                this.toggle_pause();
+            }
+        }, false);
 
         // Three.js scene
         this.graphicsWorld = new THREE.Scene();
@@ -167,6 +187,10 @@ export class World
         }
 
         this.render(this);
+    }
+
+    public toggle_pause() {
+        this.paused = !this.paused;
     }
 
     // Update
@@ -276,6 +300,10 @@ export class World
         {
             world.render(world);
         });
+
+        if (this.paused) {
+            return;
+        }
 
         // Getting timeStep
         let unscaledTimeStep = (this.requestDelta + this.renderDelta + this.logicDelta) ;
@@ -478,8 +506,8 @@ export class World
 
     public updateControls(controls: any): void
     {
-        let html = '';
-        html += '<h2 class="controls-title">Controls:</h2>';
+        this.prevControls = controls;
+        let html = '<h2 class="controls-title">Controls:</h2>';
 
         controls.forEach((row) =>
         {
