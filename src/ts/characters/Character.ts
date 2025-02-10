@@ -958,10 +958,10 @@ export class Character extends THREE.Object3D implements IWorldEntity
             world.scene.add(this.raycastBox);
 
             // Shadow cascades
-            this.materials.forEach((mat) =>
-            {
-                world.sky.csm.setupMaterial(mat);
-            });
+            // this.materials.forEach((mat) =>
+            // {
+            //     world.sky.csm.setupMaterial(mat);
+            // });
         }
     }
 

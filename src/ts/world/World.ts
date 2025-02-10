@@ -30,7 +30,6 @@ import { Car } from '../vehicles/Car';
 import { Scenario } from './Scenario';
 import { newSky } from './Sky';
 import { Ocean } from './Ocean';
-import { KeyBinding } from '../core/KeyBinding';
 
 
 export class World
@@ -96,8 +95,8 @@ export class World
             scope.camera.aspect = window.innerWidth / window.innerHeight;
             scope.camera.updateProjectionMatrix();
             scope.renderer.setSize(window.innerWidth, window.innerHeight);
-            fxaaPass.uniforms['resolution'].value.set(1 / (window.innerWidth * pixelRatio), 1 / (window.innerHeight * pixelRatio));
-            scope.composer.setSize(window.innerWidth * pixelRatio, window.innerHeight * pixelRatio);
+            // fxaaPass.uniforms['resolution'].value.set(1 / (window.innerWidth * pixelRatio), 1 / (window.innerHeight * pixelRatio));
+            // scope.composer.setSize(window.innerWidth * pixelRatio, window.innerHeight * pixelRatio);
         }
         window.addEventListener('resize', onWindowResize, false);
 
@@ -108,21 +107,24 @@ export class World
         }, false);
 
         this.scene = new THREE.Scene();
+        this.scene.castShadow = true;
+        this.scene.receiveShadow = true;
+
         this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1010);
 
-        // Passes
-        let renderPass = new RenderPass( this.scene, this.camera );
-        let fxaaPass = new ShaderPass( FXAAShader );
+        // // Passes
+        // let renderPass = new RenderPass( this.scene, this.camera );
+        // let fxaaPass = new ShaderPass( FXAAShader );
 
-        // FXAA
-        let pixelRatio = this.renderer.getPixelRatio();
-        fxaaPass.material['uniforms'].resolution.value.x = 1 / ( window.innerWidth * pixelRatio );
-        fxaaPass.material['uniforms'].resolution.value.y = 1 / ( window.innerHeight * pixelRatio );
+        // // FXAA
+        // let pixelRatio = this.renderer.getPixelRatio();
+        // fxaaPass.material['uniforms'].resolution.value.x = 1 / ( window.innerWidth * pixelRatio );
+        // fxaaPass.material['uniforms'].resolution.value.y = 1 / ( window.innerHeight * pixelRatio );
 
         // Composer
-        this.composer = new EffectComposer( this.renderer );
-        this.composer.addPass( renderPass );
-        this.composer.addPass( fxaaPass );
+        // this.composer = new EffectComposer( this.renderer );
+        // this.composer.addPass( renderPass );
+        // this.composer.addPass( fxaaPass );
 
         // Physics
         this.physicsWorld = new CANNON.World();
@@ -315,8 +317,9 @@ export class World
         this.stats.begin();
 
         // Actual rendering with a FXAA ON/OFF switch
-        if (this.params.FXAA) this.composer.render();
-        else this.renderer.render(this.scene, this.camera);
+        // if (this.params.FXAA) this.composer.render();
+        // else 
+        this.renderer.render(this.scene, this.camera);
 
         // Measuring render time
         this.renderDelta = this.clock.getDelta();

@@ -30,6 +30,7 @@ export class newSky extends THREE.Object3D implements IUpdatable
     private hemiLight: THREE.HemisphereLight;
     private maxHemiIntensity: number = 0.9;
     private minHemiIntensity: number = 0.3;
+    private directionalLight: THREE.DirectionalLight;
 
     private sky: Sky;
     private skyMesh: THREE.Mesh;
@@ -75,6 +76,20 @@ export class newSky extends THREE.Object3D implements IUpdatable
         this.hemiLight.position.set( 0, 50, 0 );
         this.world.scene.add( this.hemiLight );
 
+        this.directionalLight = new THREE.DirectionalLight(0xffffff, 3.0);
+        this.directionalLight.color.setHSL( 0.59, 0.4, 0.6 );
+        this.directionalLight.position.set(0, 50, 0);
+        this.directionalLight.castShadow = true;
+        this.directionalLight.shadow.mapSize.width = 2048;
+        this.directionalLight.shadow.mapSize.height = 2048;
+        this.directionalLight.shadow.camera.near = 0.5;
+        this.directionalLight.shadow.camera.far = 500;
+        this.directionalLight.shadow.camera.left = -100;
+        this.directionalLight.shadow.camera.right = 100;
+        this.directionalLight.shadow.camera.top = 100;
+        this.world.scene.add(this.directionalLight);
+
+
         // CSM
         // New version
         // let splitsCallback = (amount, near, far, target) =>
@@ -98,21 +113,21 @@ export class newSky extends THREE.Object3D implements IUpdatable
             return arr;
         };
 
-        this.csm = new CSM({
-            maxFar: world.camera.far,
-            lightIntensity: 1.5,
-            cascades: 4,
-            shadowMapSize: 512,
-            lightDirection: new THREE.Vector3(-this.sunPosition.x, -this.sunPosition.y, -this.sunPosition.z).normalize(),
-            camera: world.camera,
-            parent: world.scene,
-            mode: 'custom',
-            customSplitsCallback: splitsCallback
-        });
-        this.csm.fade = false;
-        this.csm.lights.forEach((light) => {
-            light.castShadow = false;
-        });
+        // this.csm = new CSM({
+        //     maxFar: world.camera.far,
+        //     lightIntensity: 1.5,
+        //     cascades: 4,
+        //     shadowMapSize: 512,
+        //     lightDirection: new THREE.Vector3(-this.sunPosition.x, -this.sunPosition.y, -this.sunPosition.z).normalize(),
+        //     camera: world.camera,
+        //     parent: world.scene,
+        //     mode: 'custom',
+        //     customSplitsCallback: splitsCallback
+        // });
+        // this.csm.fade = false;
+        // this.csm.lights.forEach((light) => {
+        //     light.castShadow = false;
+        // });
 
         this.refreshSunPosition();
         
@@ -125,7 +140,7 @@ export class newSky extends THREE.Object3D implements IUpdatable
         this.position.copy(this.world.camera.position);
         this.refreshSunPosition();
 
-        this.csm.update(); // Removed argument
+        // this.csm.update(); // Removed argument
     }
     
     public refreshSunPosition(): void
@@ -141,9 +156,9 @@ export class newSky extends THREE.Object3D implements IUpdatable
         // Line above throws error. Also does not appear to be called again.
         
         // this.csm.lightDirection = new THREE.Vector3(-this.sunPosition.x, -this.sunPosition.y, -this.sunPosition.z).normalize();
-        this.csm.lightDirection.x = -this.sunPosition.x;
-        this.csm.lightDirection.y = -this.sunPosition.y;
-        this.csm.lightDirection.z = -this.sunPosition.z;
+        // this.csm.lightDirection.x = -this.sunPosition.x;
+        // this.csm.lightDirection.y = -this.sunPosition.y;
+        // this.csm.lightDirection.z = -this.sunPosition.z;
     }
 
     public refreshHemiIntensity(): void
