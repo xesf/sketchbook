@@ -57,8 +57,8 @@ CannonDebugRenderer.prototype = {
                 if(mesh){
 
                     // Get world position
-                    body.interpolatedQuaternion.vmult(body.shapeOffsets[j], shapeWorldPosition);
-                    body.interpolatedPosition.vadd(shapeWorldPosition, shapeWorldPosition);
+                    body.quaternion.vmult(body.shapeOffsets[j], shapeWorldPosition);
+                    body.position.vadd(shapeWorldPosition, shapeWorldPosition);
 
                     // Get world quaternion
                     body.quaternion.mult(body.shapeOrientations[j], shapeWorldQuaternion);
