@@ -953,9 +953,9 @@ export class Character extends THREE.Object3D implements IWorldEntity
             // Register physics
             world.physicsWorld.addBody(this.characterCapsule.body);
 
-            // Add to graphicsWorld
-            world.graphicsWorld.add(this);
-            world.graphicsWorld.add(this.raycastBox);
+            // Add to scene
+            world.scene.add(this);
+            world.scene.add(this.raycastBox);
 
             // Shadow cascades
             this.materials.forEach((mat) =>
@@ -987,8 +987,8 @@ export class Character extends THREE.Object3D implements IWorldEntity
             world.physicsWorld.removeBody(this.characterCapsule.body);
 
             // Remove visuals
-            world.graphicsWorld.remove(this);
-            world.graphicsWorld.remove(this.raycastBox);
+            world.scene.remove(this);
+            world.scene.remove(this.raycastBox);
         }
     }
 }

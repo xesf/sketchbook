@@ -30,7 +30,6 @@ import { Car } from '../vehicles/Car';
 import { Scenario } from './Scenario';
 import { newSky } from './Sky';
 import { Ocean } from './Ocean';
-import { IInputReceiver } from '../interfaces/IInputReceiver';
 import { KeyBinding } from '../core/KeyBinding';
 
 
@@ -40,7 +39,7 @@ export class World
     public camera: THREE.PerspectiveCamera;
     public composer: any;
     public stats: Stats;
-    public graphicsWorld: THREE.Scene;
+    public scene: THREE.Scene;
     public sky: newSky;
     public physicsWorld: CANNON.World;
     public parallelPairs: any[];
@@ -69,7 +68,6 @@ export class World
     public scenarioGUIFolder: any;
     public updatables: IUpdatable[] = [];
     public paused: boolean;
-    public actions: { [action: string]: KeyBinding; };
     public prevControls: any;
 
     private lastScenarioID: string;
@@ -79,9 +77,6 @@ export class World
         const scope = this;
 
         this.paused = false;
-        this.actions = {
-            'pause': new KeyBinding('KeyP')
-        }
 
         // Renderer
         this.renderer = new THREE.WebGLRenderer();
@@ -106,23 +101,17 @@ export class World
         }
         window.addEventListener('resize', onWindowResize, false);
 
-        // document.addEventListener('keydown', (evt) => {
-        //     if (evt.code === 'KeyP') {
-        //         this.toggle_pause();
-        //     }
-        // }, false);
-		document.addEventListener('keyup', (evt) => {
+		document.addEventListener('keydown', (evt) => {
             if (evt.code === 'KeyP') {
                 this.toggle_pause();
             }
         }, false);
 
-        // Three.js scene
-        this.graphicsWorld = new THREE.Scene();
+        this.scene = new THREE.Scene();
         this.camera = new THREE.PerspectiveCamera(80, window.innerWidth / window.innerHeight, 0.1, 1010);
 
         // Passes
-        let renderPass = new RenderPass( this.graphicsWorld, this.camera );
+        let renderPass = new RenderPass( this.scene, this.camera );
         let fxaaPass = new ShaderPass( FXAAShader );
 
         // FXAA
@@ -327,7 +316,7 @@ export class World
 
         // Actual rendering with a FXAA ON/OFF switch
         if (this.params.FXAA) this.composer.render();
-        else this.renderer.render(this.graphicsWorld, this.camera);
+        else this.renderer.render(this.scene, this.camera);
 
         // Measuring render time
         this.renderDelta = this.clock.getDelta();
@@ -431,7 +420,7 @@ export class World
             }
         });
 
-        this.graphicsWorld.add(gltf.scene);
+        this.scene.add(gltf.scene);
 
         // Launch default scenario
         let defaultScenarioID: string;
@@ -595,7 +584,7 @@ export class World
             {
                 if (enabled)
                 {
-                    this.cannonDebugRenderer = new CannonDebugRenderer( this.graphicsWorld, this.physicsWorld );
+                    this.cannonDebugRenderer = new CannonDebugRenderer( this.scene, this.physicsWorld );
                 }
                 else
                 {

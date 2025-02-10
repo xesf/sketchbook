@@ -334,13 +334,13 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
         {
             this.world = world;
             world.vehicles.push(this);
-            world.graphicsWorld.add(this);
+            world.scene.add(this);
             // world.physicsWorld.addBody(this.collision);
             this.rayCastVehicle.addToWorld(world.physicsWorld);
 
             this.wheels.forEach((wheel) =>
             {
-                world.graphicsWorld.attach(wheel.wheelObject);
+                world.scene.attach(wheel.wheelObject);
             });
 
             // this.materials.forEach((mat) =>
@@ -360,13 +360,13 @@ export abstract class Vehicle extends THREE.Object3D implements IWorldEntity
         {
             this.world = undefined;
             world.vehicles.splice(world.vehicles.indexOf(this), 1);
-            world.graphicsWorld.remove(this);
+            world.scene.remove(this);
             // world.physicsWorld.remove(this.collision);
             this.rayCastVehicle.removeFromWorld(world.physicsWorld);
 
             this.wheels.forEach((wheel) =>
             {
-                world.graphicsWorld.remove(wheel.wheelObject);
+                world.scene.remove(wheel.wheelObject);
             });
         }
     }
