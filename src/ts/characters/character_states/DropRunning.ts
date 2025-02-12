@@ -14,7 +14,10 @@ export class DropRunning extends CharacterStateBase implements ICharacterState
 	constructor(character: Character)
 	{
 		super(character);
+		this.reset();
+	}
 
+	public reset(): void {
 		this.character.setArcadeVelocityTarget(0.8);
 		this.playAnimation('drop_running', 0.1);
 	}
@@ -27,7 +30,7 @@ export class DropRunning extends CharacterStateBase implements ICharacterState
 
 		if (this.animationEnded(timeStep))
 		{
-			this.character.setState(new Walk(this.character));
+			this.character.setState(this.character.walkState);
 		}
 	}
 
@@ -37,17 +40,17 @@ export class DropRunning extends CharacterStateBase implements ICharacterState
 		
 		if (this.noDirection())
 		{
-			this.character.setState(new EndWalk(this.character));
+			this.character.setState(this.character.endWalkState);
 		}
 
 		if (this.anyDirection() && this.character.actions.run.justPressed)
 		{
-			this.character.setState(new Sprint(this.character));
+			this.character.setState(this.character.sprintState);
 		}
 
 		if (this.character.actions.jump.justPressed)
 		{
-			this.character.setState(new JumpRunning(this.character));
+			this.character.setState(this.character.jumpRunningState);
 		}
 	}
 }

@@ -12,7 +12,10 @@ export class DropIdle extends CharacterStateBase implements ICharacterState
 	constructor(character: Character)
 	{
 		super(character);
+		this.reset();
+	}
 
+	public reset(): void {
 		this.character.velocitySimulator.damping = 0.5;
 		this.character.velocitySimulator.mass = 7;
 
@@ -21,7 +24,7 @@ export class DropIdle extends CharacterStateBase implements ICharacterState
 
 		if (this.anyDirection())
 		{
-			this.character.setState(new StartWalkForward(character));
+			this.character.setState(this.character.startWalkForwardState);
 		}
 	}
 
@@ -42,12 +45,12 @@ export class DropIdle extends CharacterStateBase implements ICharacterState
 		
 		if (this.character.actions.jump.justPressed)
 		{
-			this.character.setState(new JumpIdle(this.character));
+			this.character.setState(this.character.jumpIdleState);
 		}
 
 		if (this.anyDirection())
 		{
-			this.character.setState(new StartWalkForward(this.character));
+			this.character.setState(this.character.startWalkForwardState);
 		}
 	}
 }

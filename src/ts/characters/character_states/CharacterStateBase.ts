@@ -1,26 +1,13 @@
 import * as THREE from 'three';
 import * as Utils from '../../core/FunctionLibrary';
-import {
-	DropIdle,
-	DropRolling,
-	DropRunning,
-	Falling,
-	Sprint,
-	StartWalkBackLeft,
-	StartWalkBackRight,
-	StartWalkForward,
-	StartWalkLeft,
-	StartWalkRight,
-	Walk,
-} from './_stateLibrary';
 import { Character } from '../Character';
 import { ICharacterState } from '../../interfaces/ICharacterState';
 
 export abstract class CharacterStateBase implements ICharacterState
 {
 	public character: Character;
-	public timer: number;
-	public animationLength: any;
+	public timer: number = 0;
+	public animationLength: any = 0;
 
 	public canFindVehiclesToEnter: boolean;
 	public canEnterVehicles: boolean;
@@ -30,20 +17,21 @@ export abstract class CharacterStateBase implements ICharacterState
 	{
 		this.character = character;
 
-		this.character.velocitySimulator.damping = this.character.defaultVelocitySimulatorDamping;
-		this.character.velocitySimulator.mass = this.character.defaultVelocitySimulatorMass;
-
-		this.character.rotationSimulator.damping = this.character.defaultRotationSimulatorDamping;
-		this.character.rotationSimulator.mass = this.character.defaultRotationSimulatorMass;
-
-		this.character.arcadeVelocityIsAdditive = false;
-		this.character.setArcadeVelocityInfluence(1, 0, 1);
-
 		this.canFindVehiclesToEnter = true;
 		this.canEnterVehicles = false;
 		this.canLeaveVehicles = true;
 
+		// this.reset();
+	}
+
+	public reset(): void {
 		this.timer = 0;
+		this.character.velocitySimulator.damping = this.character.defaultVelocitySimulatorDamping;
+		this.character.velocitySimulator.mass = this.character.defaultVelocitySimulatorMass;
+		this.character.rotationSimulator.damping = this.character.defaultRotationSimulatorDamping;
+		this.character.rotationSimulator.mass = this.character.defaultRotationSimulatorMass;
+		this.character.arcadeVelocityIsAdditive = false;
+		this.character.setArcadeVelocityInfluence(1, 0, 1);
 	}
 
 	public update(timeStep: number): void
@@ -86,7 +74,7 @@ export abstract class CharacterStateBase implements ICharacterState
 
 	public fallInAir(): void
 	{
-		if (!this.character.rayHasHit) { this.character.setState(new Falling(this.character)); }
+		if (!this.character.rayHasHit) { this.character.setState(this.character.fallingState); }
 	}
 
 	public animationEnded(timeStep: number): boolean
@@ -110,29 +98,29 @@ export abstract class CharacterStateBase implements ICharacterState
 	{
 		if (this.character.groundImpactData.velocity.y < -6)
 		{
-			this.character.setState(new DropRolling(this.character));
+			this.character.setState(this.character.dropRollingState);
 		}
 		else if (this.anyDirection())
 		{
 			if (this.character.groundImpactData.velocity.y < -2)
 			{
-				this.character.setState(new DropRunning(this.character));
+				this.character.setState(this.character.dropRunningState);
 			}
 			else
 			{
 				if (this.character.actions.run.isPressed)
 				{
-					this.character.setState(new Sprint(this.character));
+					this.character.setState(this.character.sprintState);
 				}
 				else
 				{
-					this.character.setState(new Walk(this.character));
+					this.character.setState(this.character.walkState);
 				}
 			}
 		}
 		else
 		{
-			this.character.setState(new DropIdle(this.character));
+			this.character.setState(this.character.dropIdleState);
 		}
 	}
 
@@ -143,23 +131,23 @@ export abstract class CharacterStateBase implements ICharacterState
 
 		if (angle > range * 0.8)
 		{
-			this.character.setState(new StartWalkBackLeft(this.character));
+			this.character.setState(this.character.startWalkBackLeftState);
 		}
 		else if (angle < -range * 0.8)
 		{
-			this.character.setState(new StartWalkBackRight(this.character));
+			this.character.setState(this.character.startWalkBackRightState);
 		}
 		else if (angle > range * 0.3)
 		{
-			this.character.setState(new StartWalkLeft(this.character));
+			this.character.setState(this.character.startWalkLeftState);
 		}
 		else if (angle < -range * 0.3)
 		{
-			this.character.setState(new StartWalkRight(this.character));
+			this.character.setState(this.character.startWalkRightState);
 		}
 		else
 		{
-			this.character.setState(new StartWalkForward(this.character));
+			this.character.setState(this.character.startWalkForwardState);
 		}
 	}
 

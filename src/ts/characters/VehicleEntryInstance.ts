@@ -7,7 +7,9 @@ export class VehicleEntryInstance
 	public character: Character;
 	public targetSeat: VehicleSeat;
 	public entryPoint: THREE.Object3D;
+
 	public wantsToDrive: boolean = false;
+	public entryPointWorldPos: THREE.Vector3 = new THREE.Vector3();
 
 	constructor(character: Character)
 	{
@@ -16,9 +18,9 @@ export class VehicleEntryInstance
 
 	public update(timeStep: number): void
 	{
-		let entryPointWorldPos = new THREE.Vector3();
-		this.entryPoint.getWorldPosition(entryPointWorldPos);
-		let viewVector = new THREE.Vector3().subVectors(entryPointWorldPos, this.character.position);
+		this.entryPointWorldPos.set(0, 0, 0);
+		this.entryPoint.getWorldPosition(this.entryPointWorldPos);
+		let viewVector = new THREE.Vector3().subVectors(this.entryPointWorldPos, this.character.position);
 		this.character.setOrientation(viewVector);
 		
 		let heightDifference = viewVector.y;

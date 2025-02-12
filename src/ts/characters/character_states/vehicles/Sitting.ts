@@ -19,6 +19,10 @@ export class Sitting extends CharacterStateBase
 		this.seat = seat;
 		this.canFindVehiclesToEnter = false;
 
+		this.reset();
+	}
+
+	public reset(): void {
 		this.character.world.updateControls([
 			{
 				keys: ['X'],

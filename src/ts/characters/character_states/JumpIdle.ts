@@ -13,12 +13,15 @@ export class JumpIdle extends CharacterStateBase implements ICharacterState
 	constructor(character: Character)
 	{
 		super(character);
+		this.reset();
+	}
 
+	public reset(): void
+	{
+		this.alreadyJumped = false;
 		this.character.velocitySimulator.mass = 50;
-
 		this.character.setArcadeVelocityTarget(0);
 		this.playAnimation('jump_idle', 0.1);
-		this.alreadyJumped = false;
 	}
 
 	public update(timeStep: number): void
@@ -57,7 +60,7 @@ export class JumpIdle extends CharacterStateBase implements ICharacterState
 		}
 		else if (this.animationEnded(timeStep))
 		{
-			this.character.setState(new Falling(this.character));
+			this.character.setState(this.character.fallingState);
 		}
 	}
 }

@@ -11,6 +11,10 @@ import { EnteringVehicle } from './EnteringVehicle';
 import * as Utils from '../../../core/FunctionLibrary';
 import { SpringSimulator } from '../../../physics/spring_simulation/SpringSimulator';
 
+
+export const SPRING_SIMULATOR = new SpringSimulator(60, 10, 0.5);
+
+
 export class OpenVehicleDoor extends CharacterStateBase
 {
 	private seat: VehicleSeat;
@@ -22,7 +26,7 @@ export class OpenVehicleDoor extends CharacterStateBase
 	private startRotation: THREE.Quaternion = new THREE.Quaternion();
 	private endRotation: THREE.Quaternion = new THREE.Quaternion();
 
-	private factorSimluator: SpringSimulator;
+	private factorSimulator: SpringSimulator;
 
 	constructor(character: Character, seat: VehicleSeat, entryPoint: THREE.Object3D)
 	{
@@ -32,7 +36,14 @@ export class OpenVehicleDoor extends CharacterStateBase
 		this.seat = seat;
 		this.entryPoint = entryPoint;
 
-		const side = Utils.detectRelativeSide(entryPoint, seat.seatPointObject);
+		this.factorSimulator = SPRING_SIMULATOR;
+		this.factorSimulator.target = 1;
+
+		this.reset();
+	}
+
+	public reset(): void {
+		const side = Utils.detectRelativeSide(this.entryPoint, this.seat.seatPointObject);
 		if (side === Side.Left)
 		{
 			this.playAnimation('open_door_standing_left', 0.1);
@@ -44,7 +55,6 @@ export class OpenVehicleDoor extends CharacterStateBase
 
 		this.character.resetVelocity();
 		this.character.rotateModel();
-		this.character.setPhysicsEnabled(false);
 
 		this.character.setPhysicsEnabled(false);
 		(this.seat.vehicle as unknown as THREE.Object3D).attach(this.character);
@@ -56,8 +66,7 @@ export class OpenVehicleDoor extends CharacterStateBase
 		this.startRotation.copy(this.character.quaternion);
 		this.endRotation.copy(this.entryPoint.quaternion);
 
-		this.factorSimluator = new SpringSimulator(60, 10, 0.5);
-		this.factorSimluator.target = 1;
+		this.factorSimulator.reset()
 	}
 
 	public update(timeStep: number): void
@@ -77,7 +86,7 @@ export class OpenVehicleDoor extends CharacterStateBase
 				this.character.vehicleEntryInstance = null;
 				this.character.world.scene.attach(this.character);
 				this.character.setPhysicsEnabled(true);
-				this.character.setState(new Idle(this.character));
+				this.character.setState(this.character.idleState);
 			}
 			else
 			{
@@ -86,13 +95,13 @@ export class OpenVehicleDoor extends CharacterStateBase
 		}
 		else
 		{
-			this.factorSimluator.simulate(timeStep);
+			this.factorSimulator.simulate(timeStep);
 
-			let lerpPosition = new THREE.Vector3().lerpVectors(this.startPosition, this.endPosition, this.factorSimluator.position);
+			let lerpPosition = new THREE.Vector3().lerpVectors(this.startPosition, this.endPosition, this.factorSimulator.position);
 			this.character.setPosition(lerpPosition.x, lerpPosition.y, lerpPosition.z);
 	
-			//THREE.Quaternion.slerp(this.startRotation, this.endRotation, this.character.quaternion, this.factorSimluator.position);
-			this.character.quaternion.slerpQuaternions(this.startRotation, this.endRotation, this.factorSimluator.position);
+			//THREE.Quaternion.slerp(this.startRotation, this.endRotation, this.character.quaternion, this.factorSimulator.position);
+			this.character.quaternion.slerpQuaternions(this.startRotation, this.endRotation, this.factorSimulator.position);
 		}
 	}
 }

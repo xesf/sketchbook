@@ -29,6 +29,10 @@ export abstract class ExitingStateBase extends CharacterStateBase
 		this.seat = seat;
 		this.vehicle = seat.vehicle;
 
+		this.reset();
+	}
+
+	public reset(): void {
 		this.seat.door?.open();
 
 		this.startPosition.copy(this.character.position);

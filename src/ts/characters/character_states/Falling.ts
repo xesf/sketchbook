@@ -10,7 +10,10 @@ export class Falling extends CharacterStateBase implements ICharacterState
 	constructor(character: Character)
 	{
 		super(character);
+		this.reset();
+	}
 
+	public reset(): void {
 		this.character.velocitySimulator.mass = 100;
 		this.character.rotationSimulator.damping = 0.3;
 

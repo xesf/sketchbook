@@ -13,7 +13,10 @@ export class IdleRotateLeft extends CharacterStateBase implements ICharacterStat
 	constructor(character: Character)
 	{
 		super(character);
+		this.reset();
+	}
 
+	public reset(): void {
 		this.character.rotationSimulator.mass = 30;
 		this.character.rotationSimulator.damping = 0.6;
 
@@ -30,7 +33,7 @@ export class IdleRotateLeft extends CharacterStateBase implements ICharacterStat
 
 		if (this.animationEnded(timeStep))
 		{
-			this.character.setState(new Idle(this.character));
+			this.character.setState(this.character.idleState);
 		}
 
 		this.fallInAir();
@@ -42,14 +45,14 @@ export class IdleRotateLeft extends CharacterStateBase implements ICharacterStat
 		
 		if (this.character.actions.jump.justPressed)
 		{
-			this.character.setState(new JumpIdle(this.character));
+			this.character.setState(this.character.jumpIdleState);
 		}
 
 		if (this.anyDirection())
 		{
 			if (this.character.velocity.length() > 0.5)
 			{
-				this.character.setState(new Walk(this.character));
+				this.character.setState(this.character.walkState);
 			}
 			else
 			{

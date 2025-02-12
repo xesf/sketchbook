@@ -26,6 +26,25 @@ import { GroundImpactData } from './GroundImpactData';
 import { ClosestObjectFinder } from '../core/ClosestObjectFinder';
 import { Object3D } from 'three';
 import { EntityType } from '../enums/EntityType';
+import { EndWalk } from './character_states/EndWalk';
+import { JumpRunning } from './character_states/JumpRunning';
+import { Sprint } from './character_states/Sprint';
+import { Walk } from './character_states/Walk';
+import { Falling } from './character_states/Falling';
+import { JumpIdle } from './character_states/JumpIdle';
+import { IdleRotateLeft } from './character_states/IdleRotateLeft';
+import { StartWalkForward } from './character_states/StartWalkForward';
+import { StartWalkBackLeft } from './character_states/StartWalkBackLeft';
+import { StartWalkBackRight } from './character_states/StartWalkBackRight';
+import { StartWalkLeft } from './character_states/StartWalkLeft';
+import { StartWalkRight } from './character_states/StartWalkRight';
+import { DropIdle } from './character_states/DropIdle';
+import { DropRunning } from './character_states/DropRunning';
+import { DropRolling } from './character_states/DropRolling';
+
+
+const VEC3_UP = new THREE.Vector3(0, 1, 0);
+
 
 export class Character extends THREE.Object3D implements IWorldEntity
 {
@@ -80,6 +99,38 @@ export class Character extends THREE.Object3D implements IWorldEntity
     public vehicleEntryInstance: VehicleEntryInstance = null;
     
     private physicsEnabled: boolean = true;
+
+    // aux vectors
+    private lookVector: THREE.Vector3 = new THREE.Vector3();
+    private newPosition: THREE.Vector3 = new THREE.Vector3();
+    private localMovementVector: THREE.Vector3 = new THREE.Vector3();
+    private worldPosition: THREE.Vector3 = new THREE.Vector3();
+
+    // vehicle finder
+    private vehicleFinder: ClosestObjectFinder<Vehicle> = new ClosestObjectFinder<Vehicle>(new THREE.Vector3(), 10);
+    private seatFinder: ClosestObjectFinder<VehicleSeat> = new ClosestObjectFinder<VehicleSeat>(new THREE.Vector3());
+    private entryPointFinder: ClosestObjectFinder<Object3D> = new ClosestObjectFinder<Object3D>(new THREE.Vector3());
+    private VEHICLE_ENTRY_INSTANCE: VehicleEntryInstance = new VehicleEntryInstance(this);
+
+    // states
+    public idleState: Idle;
+    public idleRotateLeftState: IdleRotateLeft;
+    public idleRotateRightState: IdleRotateLeft;
+    public walkState: Walk;
+    public endWalkState: EndWalk;
+    public sprintState: Sprint;
+    public jumpIdleState: JumpIdle;
+    public jumpRunningState: JumpRunning;
+    public fallingState: Falling;
+    public startWalkForwardState: StartWalkForward;
+    public startWalkBackLeftState: StartWalkBackLeft;
+    public startWalkBackRightState: StartWalkBackRight;
+    public startWalkLeftState: StartWalkLeft;
+    public startWalkRightState: StartWalkRight;
+    public dropIdleState: DropIdle;
+    public dropRunningState: DropRunning;
+    public dropRollingState: DropRolling;
+
 
     constructor(gltf: any)
     {
@@ -159,8 +210,28 @@ export class Character extends THREE.Object3D implements IWorldEntity
         //this.physicsPreStep(this.characterCapsule.body, this);
         //this.physicsPostStep(this.characterCapsule.body, this);
 
+        // needs refactoring
+        this.idleState = new Idle(this);
+        this.idleRotateLeftState = new IdleRotateLeft(this);
+        this.idleRotateRightState = new IdleRotateLeft(this);
+        this.walkState = new Walk(this);
+        this.endWalkState = new EndWalk(this);
+        this.sprintState = new Sprint(this);
+        this.jumpIdleState = new JumpIdle(this);
+        this.jumpRunningState = new JumpRunning(this);
+        this.fallingState = new Falling(this);
+        this.startWalkForwardState = new StartWalkForward(this);
+        this.startWalkBackLeftState = new StartWalkBackLeft(this);
+        this.startWalkBackRightState = new StartWalkBackRight(this);
+        this.startWalkLeftState = new StartWalkLeft(this);
+        this.startWalkRightState = new StartWalkRight(this);
+        this.dropIdleState = new DropIdle(this);
+        this.dropRunningState = new DropRunning(this);
+        this.dropRollingState = new DropRolling(this);
+
+
         // States
-        this.setState(new Idle(this));
+        this.setState(this.idleState);
     }
 
     public setAnimations(animations: []): void
@@ -185,6 +256,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
     public setState(state: ICharacterState): void
     {
         this.charState = state;
+        this.charState.reset();
         this.charState.onInputChange();
     }
 
@@ -192,9 +264,18 @@ export class Character extends THREE.Object3D implements IWorldEntity
     {
         if (this.physicsEnabled)
         {
-            this.characterCapsule.body.previousPosition = new CANNON.Vec3(x, y, z);
-            this.characterCapsule.body.position = new CANNON.Vec3(x, y, z);
-            this.characterCapsule.body.interpolatedPosition = new CANNON.Vec3(x, y, z);
+            // this.characterCapsule.body.previousPosition = new CANNON.Vec3(x, y, z);
+            // this.characterCapsule.body.position = new CANNON.Vec3(x, y, z);
+            // this.characterCapsule.body.interpolatedPosition = new CANNON.Vec3(x, y, z);
+            this.characterCapsule.body.previousPosition.x = x;
+            this.characterCapsule.body.previousPosition.y = y;
+            this.characterCapsule.body.previousPosition.z = z;
+            this.characterCapsule.body.position.x = x;
+            this.characterCapsule.body.position.y = y;
+            this.characterCapsule.body.position.z = z;
+            this.characterCapsule.body.interpolatedPosition.x = x;
+            this.characterCapsule.body.interpolatedPosition.y = y;
+            this.characterCapsule.body.interpolatedPosition.z = z;
         }
         else
         {
@@ -226,7 +307,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 
     public setOrientation(vector: THREE.Vector3, instantly: boolean = false): void
     {
-        let lookVector = new THREE.Vector3().copy(vector).setY(0).normalize();
+        let lookVector = this.lookVector.copy(vector).setY(0).normalize();
         this.orientationTarget.copy(lookVector);
         
         if (instantly)
@@ -427,7 +508,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
             );
         }
         else {
-            let newPos = new THREE.Vector3();
+            let newPos = this.newPosition;
             this.getWorldPosition(newPos);
 
             this.characterCapsule.body.position.copy(Utils.cannonVector(newPos));
@@ -495,7 +576,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
         else
         {
             // Look in camera's direction
-            this.viewVector = new THREE.Vector3().subVectors(this.position, this.world.camera.position);
+            this.viewVector = this.viewVector.subVectors(this.position, this.world.camera.position);
             this.getWorldPosition(this.world.cameraOperator.target);
         }
         
@@ -546,7 +627,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
         let rot = this.rotationSimulator.position;
 
         // Updating values
-        this.orientation.applyAxisAngle(new THREE.Vector3(0, 1, 0), rot);
+        this.orientation.applyAxisAngle(VEC3_UP, rot);
         this.angularVelocity = this.rotationSimulator.velocity;
     }
 
@@ -557,13 +638,15 @@ export class Character extends THREE.Object3D implements IWorldEntity
         const positiveZ = this.actions.up.isPressed ? 1 : 0;
         const negativeZ = this.actions.down.isPressed ? -1 : 0;
 
-        return new THREE.Vector3(positiveX + negativeX, 0, positiveZ + negativeZ).normalize();
+        // return new THREE.Vector3(positiveX + negativeX, 0, positiveZ + negativeZ).normalize();
+        return this.localMovementVector.set(positiveX + negativeX, 0, positiveZ + negativeZ).normalize();
     }
 
     public getCameraRelativeMovementVector(): THREE.Vector3
     {
         const localDirection = this.getLocalMovementDirection();
-        const flatViewVector = new THREE.Vector3(this.viewVector.x, 0, this.viewVector.z).normalize();
+        // const flatViewVector = new THREE.Vector3(this.viewVector.x, 0, this.viewVector.z).normalize();
+        const flatViewVector = this.viewVector.clone().setY(0).normalize();
 
         return Utils.appplyVectorMatrixXZ(flatViewVector, localDirection);
     }
@@ -601,10 +684,12 @@ export class Character extends THREE.Object3D implements IWorldEntity
     public findVehicleToEnter(wantsToDrive: boolean): void
     {
         // reusable world position variable
-        let worldPos = new THREE.Vector3();
+        let worldPos = this.worldPosition;
+        worldPos.set(0, 0, 0);
 
         // Find best vehicle
-        let vehicleFinder = new ClosestObjectFinder<Vehicle>(this.position, 10);
+        let vehicleFinder = this.vehicleFinder;
+        vehicleFinder.set(this.position, 10);
         this.world.vehicles.forEach((vehicle) =>
         {
             vehicleFinder.consider(vehicle, vehicle.position);
@@ -613,11 +698,12 @@ export class Character extends THREE.Object3D implements IWorldEntity
         if (vehicleFinder.closestObject !== undefined)
         {
             let vehicle = vehicleFinder.closestObject;
-            let vehicleEntryInstance = new VehicleEntryInstance(this);
+            let vehicleEntryInstance = this.VEHICLE_ENTRY_INSTANCE;
             vehicleEntryInstance.wantsToDrive = wantsToDrive;
 
             // Find best seat
-            let seatFinder = new ClosestObjectFinder<VehicleSeat>(this.position);
+            let seatFinder = this.seatFinder;
+            seatFinder.set(this.position);
             for (const seat of vehicle.seats)
             {
                 if (wantsToDrive)
@@ -658,7 +744,8 @@ export class Character extends THREE.Object3D implements IWorldEntity
                 let targetSeat = seatFinder.closestObject;
                 vehicleEntryInstance.targetSeat = targetSeat;
 
-                let entryPointFinder = new ClosestObjectFinder<Object3D>(this.position);
+                let entryPointFinder = this.entryPointFinder;
+                entryPointFinder.set(this.position);
 
                 for (const point of targetSeat.entryPoints) {
                     point.getWorldPosition(worldPos);

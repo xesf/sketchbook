@@ -10,8 +10,7 @@ export class ClosestObjectFinder<T>
 
 	constructor(referencePosition: THREE.Vector3, maxDistance?: number)
 	{
-		this.referencePosition = referencePosition;
-		if (maxDistance !== undefined) this.maxDistance = maxDistance;
+		this.set(referencePosition, maxDistance);
 	}
 
 	public consider(object: T, objectPosition: THREE.Vector3): void
@@ -23,5 +22,11 @@ export class ClosestObjectFinder<T>
 			this.closestDistance = distance;
 			this.closestObject = object;
 		}
+	}
+
+	public set(referencePosition: THREE.Vector3, maxDistance?: number): void
+	{
+		this.referencePosition = referencePosition;
+		if (maxDistance !== undefined) this.maxDistance = maxDistance;
 	}
 }
