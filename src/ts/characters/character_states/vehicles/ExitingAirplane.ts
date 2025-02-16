@@ -13,11 +13,14 @@ export class ExitingAirplane extends ExitingStateBase
 	constructor(character: Character, seat: VehicleSeat)
 	{
 		super(character, seat);
+		this.reset();
+	}
 
+	public reset(): void {
 		this.endPosition.copy(this.startPosition);
 		this.endPosition.y += 1;
 
-		const quat = Utils.threeQuat((seat.vehicle as unknown as Vehicle).collision.quaternion);
+		const quat = Utils.threeQuat((this.seat.vehicle as unknown as Vehicle).collision.quaternion);
 		const forward = new THREE.Vector3(0, 0, 1).applyQuaternion(quat);
 		this.exitPoint = new THREE.Object3D();
 		this.exitPoint.lookAt(forward);

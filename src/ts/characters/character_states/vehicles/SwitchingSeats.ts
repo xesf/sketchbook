@@ -14,6 +14,7 @@ import { Space } from '../../../enums/Space';
 
 export class SwitchingSeats extends CharacterStateBase
 {
+	private fromSeat: VehicleSeat;
 	private toSeat: VehicleSeat;
 
 	private startPosition: THREE.Vector3 = new THREE.Vector3();
@@ -25,15 +26,21 @@ export class SwitchingSeats extends CharacterStateBase
 	{
 		super(character);
 
+		this.fromSeat = fromSeat;
 		this.toSeat = toSeat;
+
+		this.reset();
+	}
+
+	public reset(): void {
 		this.canFindVehiclesToEnter = false;
 		this.canLeaveVehicles = false;
 
-		character.leaveSeat();
-		this.character.occupySeat(toSeat);
+		this.character.leaveSeat();
+		this.character.occupySeat(this.toSeat);
 
-		const right = Utils.getRight(fromSeat.seatPointObject, Space.Local);
-		const viewVector = toSeat.seatPointObject.position.clone().sub(fromSeat.seatPointObject.position).normalize();
+		const right = Utils.getRight(this.fromSeat.seatPointObject, Space.Local);
+		const viewVector = this.toSeat.seatPointObject.position.clone().sub(this.fromSeat.seatPointObject.position).normalize();
 		const side = right.dot(viewVector) > 0 ? Side.Left : Side.Right;
 
 		if (side === Side.Left)
@@ -45,13 +52,13 @@ export class SwitchingSeats extends CharacterStateBase
 			this.playAnimation('sitting_shift_right', 0.1);
 		}
 
-		this.startPosition.copy(fromSeat.seatPointObject.position);
+		this.startPosition.copy(this.fromSeat.seatPointObject.position);
 		this.startPosition.y += 0.6;
-		this.endPosition.copy(toSeat.seatPointObject.position);
+		this.endPosition.copy(this.toSeat.seatPointObject.position);
 		this.endPosition.y += 0.6;
 
-		this.startRotation.copy(fromSeat.seatPointObject.quaternion);
-		this.endRotation.copy(toSeat.seatPointObject.quaternion);
+		this.startRotation.copy(this.fromSeat.seatPointObject.quaternion);
+		this.endRotation.copy(this.toSeat.seatPointObject.quaternion);
 	}
 
 	public update(timeStep: number): void
