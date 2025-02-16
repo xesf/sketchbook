@@ -10,6 +10,9 @@ export class StartWalkForward extends StartWalkBase
 	}
 
 	public reset(): void {
+		this.character.rotationSimulator.mass = 20;
+		this.character.rotationSimulator.damping = 0.7;
+		this.character.setArcadeVelocityTarget(0.8);
 		this.animationLength = this.character.setAnimation('start_forward', 0.1);
 	}
 }
