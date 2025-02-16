@@ -32,7 +32,8 @@
     "cannon-es": "0.20.0",
     "three": "0.168.0",
     "three-csm": "4.2.1",
-    "three-to-cannon": "5.0.1"
+    "three-to-cannon": "5.0.1",
+    "tweakpane": "4.0.5"
   },
   "devDependencies": {
     "css-loader": "^7.1.2",
