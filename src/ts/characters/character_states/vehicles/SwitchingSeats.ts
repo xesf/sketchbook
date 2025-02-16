@@ -28,13 +28,13 @@ export class SwitchingSeats extends CharacterStateBase
 
 		this.fromSeat = fromSeat;
 		this.toSeat = toSeat;
-		this.canFindVehiclesToEnter = false;
-		this.canLeaveVehicles = false;
 
 		this.reset();
 	}
 
 	public reset(): void {
+		this.canFindVehiclesToEnter = false;
+		this.canLeaveVehicles = false;
 
 		this.character.leaveSeat();
 		this.character.occupySeat(this.toSeat);
@@ -52,16 +52,12 @@ export class SwitchingSeats extends CharacterStateBase
 			this.playAnimation('sitting_shift_right', 0.1);
 		}
 
-		this.startPosition.set(0, 0, 0);
 		this.startPosition.copy(this.fromSeat.seatPointObject.position);
 		this.startPosition.y += 0.6;
-		this.endPosition.set(0, 0, 0);
 		this.endPosition.copy(this.toSeat.seatPointObject.position);
 		this.endPosition.y += 0.6;
 
-		this.startRotation.set(0, 0, 0, 1);
 		this.startRotation.copy(this.fromSeat.seatPointObject.quaternion);
-		this.endRotation.set(0, 0, 0, 1);
 		this.endRotation.copy(this.toSeat.seatPointObject.quaternion);
 	}
 

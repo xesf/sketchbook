@@ -20,6 +20,7 @@ export class ExitingVehicle extends ExitingStateBase
 	}
 
 	public reset(): void {
+		super.reset();
 
 		this.exitPoint = this.seat.entryPoints[0];
 

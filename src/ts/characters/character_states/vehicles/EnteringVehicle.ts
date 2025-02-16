@@ -40,12 +40,10 @@ export class EnteringVehicle extends CharacterStateBase
 	{
 		super(character);
 
-		this.canFindVehiclesToEnter = false;
 		this.vehicle = seat.vehicle;
 		this.seat = seat;
 		this.entryPoint = entryPoint;
-		this.drivingState = new Driving(this.character, this.seat);
-		this.sittingState = new Sitting(this.character, this.seat);
+
 		this.factorSimulator = SPRING_SIMULATOR;
 		this.factorSimulator.target = 1;
 		
@@ -53,6 +51,11 @@ export class EnteringVehicle extends CharacterStateBase
 	}
 
 	public reset(): void {
+		this.canFindVehiclesToEnter = false;
+
+		this.drivingState = new Driving(this.character, this.seat);
+		this.sittingState = new Sitting(this.character, this.seat);
+
 		const side = Utils.detectRelativeSide(this.entryPoint, this.seat.seatPointObject);
 		this.animData = this.getEntryAnimations(this.seat.vehicle.entityType);
 		this.playAnimation(this.animData[side], 0.1);

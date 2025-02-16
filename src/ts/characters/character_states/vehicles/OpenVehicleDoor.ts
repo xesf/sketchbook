@@ -32,17 +32,17 @@ export class OpenVehicleDoor extends CharacterStateBase
 	{
 		super(character);
 
-		this.canFindVehiclesToEnter = false;
 		this.seat = seat;
 		this.entryPoint = entryPoint;
-
+		
 		this.factorSimulator = SPRING_SIMULATOR;
 		this.factorSimulator.target = 1;
-
+		
 		this.reset();
 	}
-
+	
 	public reset(): void {
+		this.canFindVehiclesToEnter = false;
 		const side = Utils.detectRelativeSide(this.entryPoint, this.seat.seatPointObject);
 		if (side === Side.Left)
 		{

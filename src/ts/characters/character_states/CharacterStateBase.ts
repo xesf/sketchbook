@@ -16,14 +16,11 @@ export abstract class CharacterStateBase implements ICharacterState
 	constructor(character: Character)
 	{
 		this.character = character;
-
 		this.canFindVehiclesToEnter = true;
 		this.canEnterVehicles = false;
 		this.canLeaveVehicles = true;
-
-		// this.reset();
 	}
-
+	
 	public reset(): void {
 		this.timer = 0;
 		this.animationLength = 0;

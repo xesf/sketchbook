@@ -15,9 +15,7 @@ export class ClosestObjectFinder<T>
 
 	public reset(): void {
 		this.closestDistance = Number.POSITIVE_INFINITY;
-		this.maxDistance = Number.POSITIVE_INFINITY;
 		this.closestObject = undefined;
-		this.referencePosition.set(0, 0, 0);
 	}
 
 	public consider(object: T, objectPosition: THREE.Vector3): void

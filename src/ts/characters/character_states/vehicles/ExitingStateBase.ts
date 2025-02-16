@@ -33,12 +33,13 @@ export abstract class ExitingStateBase extends CharacterStateBase
 	}
 
 	public reset(): void {
+		this.canFindVehiclesToEnter = false;
+		this.dummyObj = new THREE.Object3D();
+
 		this.seat.door?.open();
 
 		this.startPosition.copy(this.character.position);
 		this.startRotation.copy(this.character.quaternion);
-
-		this.dummyObj = new THREE.Object3D();
 	}
 
 	public detachCharacterFromVehicle(): void
