@@ -1,7 +1,7 @@
 <p align="center">
-	<a href="https://jblaha.art/sketchbook/latest"><img src="./src/img/cover-by-weiserhei.jpg"></a>
+	<a href="https://xesf.github.io/sketchbook/"><img src="./src/img/cover-by-weiserhei.jpg"></a>
 	<br>
-	<a href="https://jblaha.art/sketchbook/latest">Live demo</a>
+	<a href="https://xesf.github.io/sketchbook/">Live demo</a>
 	<br>
 </p>
 
