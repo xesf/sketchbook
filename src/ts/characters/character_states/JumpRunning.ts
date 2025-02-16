@@ -19,6 +19,10 @@ export class JumpRunning extends CharacterStateBase implements ICharacterState
 
 	public reset(): void
 	{
+		this.timer = 0;
+		this.animationLength = 0;
+		this.character.arcadeVelocityIsAdditive = false;
+		
 		this.alreadyJumped = false;
 		this.character.velocitySimulator.mass = 100;
 		this.playAnimation('jump_running', 0.03);

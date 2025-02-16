@@ -16,6 +16,10 @@ export class Idle extends CharacterStateBase implements ICharacterState
 	}
 
     public reset(): void {
+		this.timer = 0;
+		this.animationLength = 0;
+		this.character.arcadeVelocityIsAdditive = false;
+
         this.character.velocitySimulator.damping = 0.6;
 		this.character.velocitySimulator.mass = 10;
 		this.character.setArcadeVelocityTarget(0);

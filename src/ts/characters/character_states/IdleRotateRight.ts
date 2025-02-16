@@ -17,6 +17,10 @@ export class IdleRotateRight extends CharacterStateBase implements ICharacterSta
 	}
 
 	public reset(): void {
+		this.timer = 0;
+		this.animationLength = 0;
+		this.character.arcadeVelocityIsAdditive = false;
+		
 		this.character.rotationSimulator.mass = 30;
 		this.character.rotationSimulator.damping = 0.6;
 

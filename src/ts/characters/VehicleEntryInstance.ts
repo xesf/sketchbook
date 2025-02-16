@@ -16,6 +16,13 @@ export class VehicleEntryInstance
 		this.character = character;
 	}
 
+	public reset(): void {
+		this.targetSeat = null;
+		this.entryPoint = null;
+		this.wantsToDrive = false;
+		this.entryPointWorldPos.set(0, 0, 0);
+	}
+
 	public update(timeStep: number): void
 	{
 		this.entryPointWorldPos.set(0, 0, 0);

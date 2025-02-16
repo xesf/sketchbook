@@ -307,6 +307,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
 
     public setOrientation(vector: THREE.Vector3, instantly: boolean = false): void
     {
+        this.lookVector.set(0, 0, 0);
         let lookVector = this.lookVector.copy(vector).setY(0).normalize();
         this.orientationTarget.copy(lookVector);
         
@@ -508,6 +509,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
             );
         }
         else {
+            this.newPosition.set(0, 0, 0);
             let newPos = this.newPosition;
             this.getWorldPosition(newPos);
 
@@ -639,6 +641,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
         const negativeZ = this.actions.down.isPressed ? -1 : 0;
 
         // return new THREE.Vector3(positiveX + negativeX, 0, positiveZ + negativeZ).normalize();
+        this.localMovementVector.set(0, 0, 0);
         return this.localMovementVector.set(positiveX + negativeX, 0, positiveZ + negativeZ).normalize();
     }
 
@@ -684,11 +687,12 @@ export class Character extends THREE.Object3D implements IWorldEntity
     public findVehicleToEnter(wantsToDrive: boolean): void
     {
         // reusable world position variable
+        this.worldPosition.set(0, 0, 0)
         let worldPos = this.worldPosition;
-        worldPos.set(0, 0, 0);
 
         // Find best vehicle
         let vehicleFinder = this.vehicleFinder;
+        vehicleFinder.reset();
         vehicleFinder.set(this.position, 10);
         this.world.vehicles.forEach((vehicle) =>
         {
@@ -699,10 +703,12 @@ export class Character extends THREE.Object3D implements IWorldEntity
         {
             let vehicle = vehicleFinder.closestObject;
             let vehicleEntryInstance = this.VEHICLE_ENTRY_INSTANCE;
+            vehicleEntryInstance.reset();
             vehicleEntryInstance.wantsToDrive = wantsToDrive;
 
             // Find best seat
             let seatFinder = this.seatFinder;
+            seatFinder.reset();
             seatFinder.set(this.position);
             for (const seat of vehicle.seats)
             {
@@ -745,6 +751,7 @@ export class Character extends THREE.Object3D implements IWorldEntity
                 vehicleEntryInstance.targetSeat = targetSeat;
 
                 let entryPointFinder = this.entryPointFinder;
+                entryPointFinder.reset();
                 entryPointFinder.set(this.position);
 
                 for (const point of targetSeat.entryPoints) {

@@ -26,6 +26,7 @@ export abstract class CharacterStateBase implements ICharacterState
 
 	public reset(): void {
 		this.timer = 0;
+		this.animationLength = 0;
 		this.character.velocitySimulator.damping = this.character.defaultVelocitySimulatorDamping;
 		this.character.velocitySimulator.mass = this.character.defaultVelocitySimulatorMass;
 		this.character.rotationSimulator.damping = this.character.defaultRotationSimulatorDamping;

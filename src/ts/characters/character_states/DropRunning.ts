@@ -18,6 +18,10 @@ export class DropRunning extends CharacterStateBase implements ICharacterState
 	}
 
 	public reset(): void {
+		this.timer = 0;
+		this.animationLength = 0;
+		this.character.arcadeVelocityIsAdditive = false;
+
 		this.character.setArcadeVelocityTarget(0.8);
 		this.playAnimation('drop_running', 0.1);
 	}

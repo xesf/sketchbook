@@ -14,6 +14,10 @@ export class Falling extends CharacterStateBase implements ICharacterState
 	}
 
 	public reset(): void {
+		this.timer = 0;
+		this.animationLength = 0;
+		this.character.arcadeVelocityIsAdditive = false;
+		
 		this.character.velocitySimulator.mass = 100;
 		this.character.rotationSimulator.damping = 0.3;
 
