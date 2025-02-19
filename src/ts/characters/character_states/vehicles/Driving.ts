@@ -16,9 +16,13 @@ export class Driving extends CharacterStateBase
 
 		this.seat = seat;
 		this.canFindVehiclesToEnter = false;
-		this.playAnimation('driving', 0.1);
+		
+		this.reset();
+	}
 
-		this.character.startControllingVehicle(seat.vehicle, this.seat);
+	public reset(): void {
+		this.playAnimation('driving', 0.1);
+		this.character.startControllingVehicle(this.seat.vehicle, this.seat);
 		this.seat.vehicle.onInputChange();
 		this.character.vehicleEntryInstance = null;
 	}

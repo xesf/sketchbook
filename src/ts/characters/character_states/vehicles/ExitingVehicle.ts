@@ -16,13 +16,18 @@ export class ExitingVehicle extends ExitingStateBase
 	constructor(character: Character, seat: VehicleSeat)
 	{
 		super(character, seat);
+		this.reset();
+	}
 
-		this.exitPoint = seat.entryPoints[0];
+	public reset(): void {
+		super.reset();
+
+		this.exitPoint = this.seat.entryPoints[0];
 
 		this.endPosition.copy(this.exitPoint.position);
 		this.endPosition.y += 0.52;
 
-		const side = Utils.detectRelativeSide(seat.seatPointObject, this.exitPoint);
+		const side = Utils.detectRelativeSide(this.seat.seatPointObject, this.exitPoint);
 		if (side === Side.Left)
 		{
 			this.playAnimation('stand_up_left', 0.1);
@@ -45,17 +50,17 @@ export class ExitingVehicle extends ExitingStateBase
 
 			if (!this.character.rayHasHit)
 			{
-				this.character.setState(new Falling(this.character));
+				this.character.setState(this.character.fallingState);
 				this.character.leaveSeat();
 			}
 			else if ((this.vehicle as unknown as Vehicle).collision.velocity.length() > 1)
 			{
-				this.character.setState(new DropRolling(this.character));
+				this.character.setState(this.character.dropRollingState);
 				this.character.leaveSeat();
 			}
 			else if (this.anyDirection() || this.seat.door === undefined)
 			{
-				this.character.setState(new Idle(this.character));
+				this.character.setState(this.character.idleState);
 				this.character.leaveSeat();
 			}
 			else

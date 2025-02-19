@@ -14,12 +14,16 @@ import { EntityType } from '../../../enums/EntityType';
 import { Object3D } from 'three';
 import * as Utils from '../../../core/FunctionLibrary';
 import { SpringSimulator } from '../../../physics/spring_simulation/SpringSimulator';
+import { SPRING_SIMULATOR } from './OpenVehicleDoor';
+
+
 
 export class EnteringVehicle extends CharacterStateBase
 {
 	private vehicle: IControllable;
 	private animData: any;
 	private seat: VehicleSeat;
+	private entryPoint: Object3D;
 
 	private initialPositionOffset: THREE.Vector3 = new THREE.Vector3();
 	private startPosition: THREE.Vector3 = new THREE.Vector3();
@@ -29,16 +33,31 @@ export class EnteringVehicle extends CharacterStateBase
 
 	private factorSimulator: SpringSimulator;
 
+	private drivingState: Driving;
+	private sittingState: Sitting;
+
 	constructor(character: Character, seat: VehicleSeat, entryPoint: Object3D)
 	{
 		super(character);
 
-		this.canFindVehiclesToEnter = false;
 		this.vehicle = seat.vehicle;
 		this.seat = seat;
+		this.entryPoint = entryPoint;
 
-		const side = Utils.detectRelativeSide(entryPoint, seat.seatPointObject);
-		this.animData = this.getEntryAnimations(seat.vehicle.entityType);
+		this.factorSimulator = SPRING_SIMULATOR;
+		this.factorSimulator.target = 1;
+		
+		this.reset();
+	}
+
+	public reset(): void {
+		this.canFindVehiclesToEnter = false;
+
+		this.drivingState = new Driving(this.character, this.seat);
+		this.sittingState = new Sitting(this.character, this.seat);
+
+		const side = Utils.detectRelativeSide(this.entryPoint, this.seat.seatPointObject);
+		this.animData = this.getEntryAnimations(this.seat.vehicle.entityType);
 		this.playAnimation(this.animData[side], 0.1);
 
 		this.character.resetVelocity();
@@ -46,17 +65,19 @@ export class EnteringVehicle extends CharacterStateBase
 		this.character.setPhysicsEnabled(false);
 		(this.seat.vehicle as unknown as THREE.Object3D).attach(this.character);
 
-		this.startPosition.copy(entryPoint.position);
+		this.startPosition.copy(this.entryPoint.position);
 		this.startPosition.y += 0.53;
-		this.endPosition.copy(seat.seatPointObject.position);
+		this.endPosition.copy(this.seat.seatPointObject.position);
 		this.endPosition.y += 0.6;
 		this.initialPositionOffset.copy(this.startPosition).sub(this.character.position);
 
 		this.startRotation.copy(this.character.quaternion);
 		this.endRotation.copy(this.seat.seatPointObject.quaternion);
 
-		this.factorSimulator = new SpringSimulator(60, 10, 0.5);
-		this.factorSimulator.target = 1;
+		this.factorSimulator.reset()
+
+		this.drivingState.reset();
+		this.sittingState.reset();
 	}
 
 	public update(timeStep: number): void
@@ -71,11 +92,11 @@ export class EnteringVehicle extends CharacterStateBase
 			if (this.seat.type === SeatType.Driver)
 			{
 				if (this.seat.door) this.seat.door.physicsEnabled = true;
-				this.character.setState(new Driving(this.character, this.seat));
+				this.character.setState(this.drivingState);
 			}
 			else if (this.seat.type === SeatType.Passenger)
 			{
-				this.character.setState(new Sitting(this.character, this.seat));
+				this.character.setState(this.sittingState);
 			}
 		}
 		else

@@ -24,12 +24,17 @@ export class SpringSimulator extends SimulatorBase
 
 		// Initialize cache by pushing two frames
 		this.cache = []; // At least two frames
-		for (let i = 0; i < 2; i++)
-		{
-			this.cache.push(
-				new SimulationFrame(startPosition, startVelocity),
-			);
-		}
+		this.cache.push(new SimulationFrame(startPosition, startVelocity));
+		this.cache.push(new SimulationFrame(startPosition, startVelocity));
+	}
+
+	public reset(): void {
+		this.position = 0;
+		this.velocity = 0;
+		this.cache[0].position = 0;
+		this.cache[0].velocity = 0;
+		this.cache[1].position = 0;
+		this.cache[1].velocity = 0;
 	}
 
 	/**

@@ -3,6 +3,7 @@ export interface ICharacterState {
 	canEnterVehicles: boolean; // Actually get into the vehicle
 	canLeaveVehicles: boolean;
 
+	reset(): void;
 	update(timeStep: number): void;
 	onInputChange(): void;
 }

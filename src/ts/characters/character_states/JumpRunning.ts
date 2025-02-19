@@ -9,14 +9,28 @@ import { Character } from '../Character';
 export class JumpRunning extends CharacterStateBase implements ICharacterState
 {
 	private alreadyJumped: boolean;
+	private fallingState: Falling;
 
 	constructor(character: Character)
 	{
 		super(character);
+		this.reset();
+	}
 
+	public reset(): void
+	{
+		this.timer = 0;
+		this.animationLength = 0;
+		this.character.velocitySimulator.damping = this.character.defaultVelocitySimulatorDamping;
+		this.character.velocitySimulator.mass = this.character.defaultVelocitySimulatorMass;
+		this.character.rotationSimulator.damping = this.character.defaultRotationSimulatorDamping;
+		this.character.rotationSimulator.mass = this.character.defaultRotationSimulatorMass;
+		this.character.arcadeVelocityIsAdditive = false;
+		this.character.setArcadeVelocityInfluence(1, 0, 1);
+		
+		this.alreadyJumped = false;
 		this.character.velocitySimulator.mass = 100;
 		this.playAnimation('jump_running', 0.03);
-		this.alreadyJumped = false;
 	}
 
 	public update(timeStep: number): void
@@ -46,7 +60,7 @@ export class JumpRunning extends CharacterStateBase implements ICharacterState
 		}
 		else if (this.animationEnded(timeStep))
 		{
-			this.character.setState(new Falling(this.character));
+			this.character.setState(this.character.fallingState);
 		}
 	}
 }
