@@ -80,14 +80,18 @@ export class newSky extends THREE.Object3D implements IUpdatable
         this.directionalLight.color.setHSL( 0.59, 0.4, 0.6 );
         this.directionalLight.position.set(0, 50, 0);
         this.directionalLight.castShadow = true;
-        this.directionalLight.shadow.mapSize.width = 2048;
-        this.directionalLight.shadow.mapSize.height = 2048;
-        this.directionalLight.shadow.camera.near = 0.5;
-        this.directionalLight.shadow.camera.far = 500;
-        this.directionalLight.shadow.camera.left = -100;
-        this.directionalLight.shadow.camera.right = 100;
+        this.directionalLight.shadow.mapSize.width = 4096;
+        this.directionalLight.shadow.mapSize.height = 4096;
+        this.directionalLight.shadow.camera.near = 0.1;
+        this.directionalLight.shadow.camera.far = 2000;
+        this.directionalLight.shadow.camera.left = -1000;
+        this.directionalLight.shadow.camera.right = 1000;
         this.directionalLight.shadow.camera.top = 100;
         this.world.scene.add(this.directionalLight);
+        this.world.scene.add(this.directionalLight.target);
+
+        const helper = new THREE.CameraHelper(this.directionalLight.shadow.camera);
+        this.world.scene.add( helper );
 
 
         // CSM
@@ -138,6 +142,8 @@ export class newSky extends THREE.Object3D implements IUpdatable
     public update(timeScale: number): void
     {
         this.position.copy(this.world.camera.position);
+        // this.directionalLight.target.position.set(this.world.camera.position.x, 0, this.world.camera.position.z);
+        // this.directionalLight.shadow.camera.position.set(this.world.camera.position.x, 0, this.world.camera.position.z);
         this.refreshSunPosition();
 
         // this.csm.update(); // Removed argument
@@ -150,6 +156,8 @@ export class newSky extends THREE.Object3D implements IUpdatable
         this.sunPosition.x = sunDistance * Math.sin(this._theta * Math.PI / 180) * Math.cos(this._phi * Math.PI / 180);
         this.sunPosition.y = sunDistance * Math.sin(this._phi * Math.PI / 180);
         this.sunPosition.z = sunDistance * Math.cos(this._theta * Math.PI / 180) * Math.cos(this._phi * Math.PI / 180);
+
+        this.directionalLight.position.set(this.sunPosition.x, this.sunPosition.y, this.sunPosition.z);
         
         this.skyMaterial.uniforms.sunPosition.value.copy(this.sunPosition);
         //this.skyMaterial.uniforms.cameraPos.value.copy(this.world.camera.position);

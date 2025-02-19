@@ -85,6 +85,7 @@ export class World
         this.renderer.toneMappingExposure = 1.0;
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+        this.renderer.shadowMap.needsUpdate = true;
 
         document.body.appendChild(this.renderer.domElement);
         this.renderer.domElement.id = 'canvas';
